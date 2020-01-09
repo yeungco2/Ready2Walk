@@ -1,0 +1,7 @@
+Hello
+
+Layouts are how the activities are seen by the user on the application screen
+Current Activities:
+* Training - Main "Home" Screen
+* Display Message - Related to the display_message activity, this screen will prompt when you click
+button on the Training screen
