@@ -1,19 +1,21 @@
 package com.example.cauliflower.ready2walk.Database
 
-import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface SessionDao {
 
-    @Query("SELECT * from sessions_table")
-    fun getAllSessions(): LiveData<List<Sessions>>
+    //suspend functions because of coroutines
+    @Query("SELECT * from sessions_table ORDER By id DESC" )
+    suspend fun getAllSessions(): List<Sessions>
 
     @Insert
-    fun addSession(sessions: Sessions)
+    suspend fun addSession(sessions: Sessions)
 
-    @Query("DELETE FROM sessions_table")
-    fun deleteAll()
+    @Delete
+    suspend fun deleteSession(sessions: Sessions)
+
+    @Update
+    suspend fun updateSession (sessions: Sessions)
+
 }

@@ -12,15 +12,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //find id of navigation host in this case main activity xml homeFragment
+        //find id of naviagtion host in this case main activity xml homeFragment
         val navController = Navigation.findNavController(this, R.id.homeFragment)
         NavigationUI.setupActionBarWithNavController(this,navController)
-    }
+        }
     //find navigation host
     override fun onSupportNavigateUp(): Boolean {
         return NavigationUI.navigateUp(
-                Navigation.findNavController(this, R.id.homeFragment),
-                null
+            Navigation.findNavController(this, R.id.homeFragment),
+            null
         )
     }
+
 }

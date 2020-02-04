@@ -1,52 +1,89 @@
 package com.example.cauliflower.ready2walk.UI
 
-import android.os.AsyncTask
+
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
+
 import com.example.cauliflower.ready2walk.Database.Sessions
 import com.example.cauliflower.ready2walk.Database.SessionsDatabase
 import java.time.LocalDateTime
 
 import com.example.cauliflower.ready2walk.R
 import kotlinx.android.synthetic.main.fragment_sampling.*
-import java.util.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass.
  */
-class SamplingFragment : Fragment() {
+class SamplingFragment : BaseFragment(), SensorEventListener {
+
+    private var sensorManager: SensorManager? = null
+    var phoneAccelerometer: Sensor? = null
+    var running  = false
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_sampling, container, false)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     //create functionality of sampling fragment
+    @RequiresApi(Build.VERSION_CODES.O) // for local time option
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        //intialize sensor service (dont forget the activity instance)
+        sensorManager = activity!!.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        phoneAccelerometer = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
+        //functionality start button
         startButton.setOnClickListener {
-            //Create session entry
-            val dateSession = LocalDateTime.now()
-            val session = Sessions(dateSession.toString())
 
-            //Push session to database
-            saveSession(session)
+            CoroutineScope(Dispatchers.Main + job1).launch {
+                context?.let {
+                    //Create session entry
+                    val dateSession = 9
+                    // LocalData time bug to be fixed
+                    //val dateSession = LocalDateTime.now()
+                    //val sensorData =
+
+
+
+                    val session = Sessions(dateSession.toString())
+                    SessionsDatabase(it).getSessionsDao().addSession(session)
+                    it.toast("Session Started") //send verification message
+                }
+            }
         }
+
+
     }
 
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
-    private fun saveSession(sessions: Sessions) {
+    override fun onSensorChanged(event: SensorEvent?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    //saving without coroutines
+    /*private fun saveSession(sessions: Sessions) {
         class SaveSession : AsyncTask<Void, Void, Void>() {
             //run in background
             override fun doInBackground(vararg parameters: Void?): Void? {
@@ -62,5 +99,5 @@ class SamplingFragment : Fragment() {
 
         }
         SaveSession().execute()
-    }
+    }*/
 }

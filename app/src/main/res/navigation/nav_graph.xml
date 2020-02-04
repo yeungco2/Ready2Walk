@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@+id/homeFragment">
+    app:startDestination="@id/homeFragment">
 
     <fragment
         android:id="@+id/homeFragment"
@@ -13,6 +13,9 @@
         <action
             android:id="@+id/actionStartSampling"
             app:destination="@id/samplingFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_filesFragment"
+            app:destination="@id/filesFragment" />
     </fragment>
     <fragment
         android:id="@+id/samplingFragment"
@@ -22,5 +25,31 @@
         <action
             android:id="@+id/actionSaveSampling"
             app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/filesFragment"
+        android:name="com.example.cauliflower.ready2walk.UI.FilesFragment"
+        android:label="fragment_files"
+        tools:layout="@layout/fragment_files" >
+        <action
+            android:id="@+id/action_filesFragment_to_homeFragment2"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_filesFragment_to_sessionView"
+            app:destination="@+id/sessionView" />
+    </fragment>
+    <fragment
+        android:id="@+id/sessionView"
+        android:name="com.example.cauliflower.ready2walk.UI.SessionView"
+        android:label="fragment_session_view"
+        tools:layout="@layout/fragment_session_view" >
+        <action
+            android:id="@+id/action_sessionView_to_filesFragment"
+            app:destination="@id/filesFragment" />
+        <argument
+            app:argType="com.example.cauliflower.ready2walk.Database.Sessions"
+            android:name="Sessions"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 </navigation>
