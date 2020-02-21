@@ -10,8 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 
 import com.example.cauliflower.ready2walk.R
-import com.example.cauliflower.ready2walk.UI.HomeFragmentDirections
 import kotlinx.android.synthetic.main.fragment_home.*
+import com.example.cauliflower.ready2walk.UI.HomeFragmentDirections as HomeFragmentDirections1
 
 
 /**
@@ -31,12 +31,17 @@ class HomeFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         trainingButton.setOnClickListener {
             // make training button go to the sampling fragment
-            val action = HomeFragmentDirections.actionStartSampling()
+            val action = HomeFragmentDirections1.actionStartSampling()
             Navigation.findNavController(it).navigate(action)
         }
         filesButton.setOnClickListener {
             // make files button go to the files fragment
-            val action = HomeFragmentDirections.actionHomeFragmentToFilesFragment()
+            val action = HomeFragmentDirections1.actionHomeFragmentToFilesFragment()
+            Navigation.findNavController(it).navigate(action)
+        }
+
+        userInfoButton.setOnClickListener{
+            val action = HomeFragmentDirections1.actionHomeFragmentToUserInfoFragment()
             Navigation.findNavController(it).navigate(action)
         }
 
