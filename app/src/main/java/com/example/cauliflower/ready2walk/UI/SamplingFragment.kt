@@ -73,9 +73,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 context?.let {
                     //Create session entry
                     var sessionAccelerometer = accelerometerData.toList()
-                    // LocalData time bug to be fixed
-                    //val dateSession = LocalDateTime.now()
-                    //val sensorData =
+                    sessionDate = Calendar.getInstance().time.toString()
 
                     //push into database
                     val session = Sessions(sessionDate, sessionAccelerometer)
@@ -89,12 +87,10 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
     }
 
-
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null) {
             if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
                 accelerometerData.add(event.values[0])
-                sessionDate = Calendar.getInstance().toString()
             }
         }
     }
