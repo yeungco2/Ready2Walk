@@ -1,15 +1,14 @@
 package com.example.cauliflower.ready2walk.Database
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
 
 // Annotates class to be a Room Database with a table (entity) of the Word class
 @Database(
     entities = arrayOf(Sessions::class),
     version = 1,
     exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class SessionsDatabase : RoomDatabase(){ //inherit from room database
 
     //get DAOs

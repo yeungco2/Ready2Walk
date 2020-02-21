@@ -25,7 +25,7 @@ class SessionAdapter(private val listSessions : List<Sessions>) : RecyclerView.A
     // function to populate session layout
     override fun onBindViewHolder(holder: SessionViewHolder, position: Int) {
         holder.view.text_view_title.text = "Session Date:"
-        holder.view.text_view_note.text = listSessions[position].sessionDate
+        holder.view.text_view_note.text = listSessions[position].id.toString()
 
         holder.view.setOnClickListener{
             // button action to move into the session summary

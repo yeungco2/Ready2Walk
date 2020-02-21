@@ -43,7 +43,7 @@ class SessionView : BaseFragment()  {
         arguments?.let {
             session = SessionViewArgs.fromBundle(it).sessions
             // do stuff with the session passed
-            dateSummary.text = session?.sessionDate
+            dateSummary.text = session?.accelerometerData.toString()
         }
     }
 
