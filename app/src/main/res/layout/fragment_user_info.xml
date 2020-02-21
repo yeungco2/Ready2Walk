@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,7 +7,81 @@
 
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello Bobby" />
-</FrameLayout>
+        android:id="@+id/UserInfo1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="3dp"
+        android:text="@string/user_info1" />
+    <TextView
+        android:id="@+id/UserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/UserInfo1"
+        android:text="@string/user_name" />
+
+    <TextView
+        android:id="@+id/UserInfo2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/UserName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginRight="3dp"
+        android:text="@string/user_info2" />
+    <TextView
+        android:id="@+id/UserHeight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/UserInfo1"
+        android:layout_toRightOf="@id/UserInfo2"
+        android:text="@string/user_height"/>
+    <TextView
+        android:id="@+id/UserUnit2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/UserHeight"
+        android:layout_below="@id/UserInfo1"
+        android:text="@string/user_unit2" />
+
+    <TextView
+        android:id="@+id/UserInfo3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/UserInfo2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginRight="3dp"
+        android:text="@string/user_info3" />
+    <TextView
+        android:id="@+id/UserWeight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/UserInfo3"
+        android:layout_marginRight="3dp"
+        android:layout_below="@id/UserInfo2"
+        android:text="@string/user_weight"/>
+    <TextView
+        android:id="@+id/UserUnit3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/UserInfo2"
+        android:layout_toRightOf="@id/UserWeight"
+        android:layout_marginRight="3dp"
+        android:text="@string/user_unit3"/>
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"/>
+
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="false"
+        android:layout_centerHorizontal="true"
+        android:text="Update Info" />
+    <!--android:onClick="sendMessage" -->
+    <!--android:layout_below="@id/UserName" -->
+</RelativeLayout>

@@ -1,17 +1,18 @@
 package com.example.cauliflower.ready2walk.UI
 
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.cauliflower.ready2walk.Database.Sessions
+import android.widget.EditText
+import android.widget.TextView
 import com.example.cauliflower.ready2walk.R
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_user_info.*
 
 
 class UserInfoFragment : BaseFragment()  {
-
-    //received note
-    private var session: Sessions? = null
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -26,6 +27,10 @@ class UserInfoFragment : BaseFragment()  {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
+/*
+        fun sendMessage() {
+            val message = editText.text.toString()
+            UserName.text = message
+        }*/
     }
 }
