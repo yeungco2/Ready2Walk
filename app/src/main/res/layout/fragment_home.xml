@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
-        android:layout_marginBottom="341dp"
+        android:layout_marginBottom="300dp"
         android:backgroundTint="#00BCD4"
         android:clickable="true"
         android:src="@drawable/ic_fitness_center_black_24dp" />
