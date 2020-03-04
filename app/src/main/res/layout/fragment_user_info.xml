@@ -105,7 +105,15 @@
         android:layout_below="@id/UserAge"
         android:layout_centerHorizontal="true"
         android:layout_marginRight="3dp"
-        android:text="Gender"/>
+        android:text="Gender:"/>
+    <TextView
+        android:id="@+id/UserGender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/UserInfo5"
+        android:layout_marginRight="3dp"
+        android:layout_below="@id/UserInfo4"
+        android:text="Male"/>
 
     <Button
         android:id="@+id/button"
