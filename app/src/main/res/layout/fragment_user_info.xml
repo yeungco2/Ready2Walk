@@ -80,7 +80,16 @@
         android:layout_below="@id/UserWeight"
         android:layout_centerHorizontal="true"
         android:layout_marginRight="3dp"
-        android:text="Age"/>
+        android:text="Age:"/>
+    <TextView
+        android:id="@+id/UserAge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/UserInfo4"
+        android:layout_marginRight="3dp"
+        android:layout_below="@id/UserInfo3"
+        android:text="22"/>
+    
 
 
     <Button
