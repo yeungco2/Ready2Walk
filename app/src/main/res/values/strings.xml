@@ -13,5 +13,11 @@
     <string name="user_info3"> Weight: </string>
     <string name="user_unit2"> cm </string>
     <string name="user_unit3"> kg </string>
+    <!-- Name of App Pages (Activities). Please make the names all begin with Capital Letters-->
+    <string name="Home"> BME Capstone Project</string>
+    <string name="Sampling"> Sampling </string>
+    <string name="UserInfo"> User Info</string>
+    <string name="Instruction"> User Manual </string>
+    <string name="Files"> Sampling Files</string>
 
 </resources>

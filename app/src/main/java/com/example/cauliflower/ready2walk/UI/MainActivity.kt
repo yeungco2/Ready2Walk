@@ -1,10 +1,11 @@
 package com.example.cauliflower.ready2walk.UI
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import com.example.cauliflower.ready2walk.R
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,5 +24,4 @@ class MainActivity : AppCompatActivity() {
             null
         )
     }
-
 }

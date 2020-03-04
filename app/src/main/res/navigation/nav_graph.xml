@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_homeFragment_to_userInfoFragment"
             app:destination="@id/userInfoFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_appInfoFragment"
+            app:destination="@id/appInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/samplingFragment"
@@ -63,6 +66,16 @@
         tools:layout="@layout/fragment_user_info">
         <action
             android:id="@+id/action_userInfoFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/appInfoFragment"
+        android:name="com.example.cauliflower.ready2walk.UI.AppInfoFragment"
+        android:label="fragment_app_info"
+        tools:layout="@layout/fragment_app_info">
+        <action
+            android:id="@+id/action_appInfoFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
 </navigation>

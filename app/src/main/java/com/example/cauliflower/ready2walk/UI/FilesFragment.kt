@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.cauliflower.ready2walk.R
 import com.example.cauliflower.ready2walk.Database.SessionsDatabase
@@ -25,6 +26,9 @@ class FilesFragment : BaseFragment() {// dont forget the base fragmet !!!!
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        //Setting the Title of the Fragment Page
+        (context as AppCompatActivity).supportActionBar!!.title = activity!!.resources.getString(R.string.Files)
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_files, container, false) //connect to the xml
     }

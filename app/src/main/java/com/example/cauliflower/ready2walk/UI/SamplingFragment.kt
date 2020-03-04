@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 
 import com.example.cauliflower.ready2walk.Database.Sessions
 import com.example.cauliflower.ready2walk.Database.SessionsDatabase
@@ -44,6 +45,9 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        //Setting the Title of the Fragment Page
+        (context as AppCompatActivity).supportActionBar!!.title = activity!!.resources.getString(R.string.Sampling)
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_sampling, container, false)
     }

@@ -13,19 +13,20 @@ package com.example.cauliflower.ready2walk.UI
     import kotlinx.android.synthetic.main.fragment_user_info.*
 
 
-    class UserInfoFragment : BaseFragment()  {
+    class AppInfoFragment : BaseFragment()  {
 
         override fun onCreateView(
                 inflater: LayoutInflater, container: ViewGroup?,
                 savedInstanceState: Bundle?
     ): View? {
         // Create option Menu
-        setHasOptionsMenu(true)
+            setHasOptionsMenu(true)
+
             //Setting the Title of the Fragment Page
-            (context as AppCompatActivity).supportActionBar!!.title = activity!!.resources.getString(R.string.UserInfo)
+            (context as AppCompatActivity).supportActionBar!!.title = activity!!.resources.getString(R.string.Instruction)
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_info, container, false)
+        return inflater.inflate(R.layout.fragment_app_info, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
