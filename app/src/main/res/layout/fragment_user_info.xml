@@ -73,6 +73,14 @@
         android:id="@+id/editText"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"/>
+    <TextView
+        android:id="@+id/UserInfo4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/UserWeight"
+        android:layout_centerHorizontal="true"
+        android:layout_marginRight="3dp"
+        android:text="Age"/>
 
 
     <Button
