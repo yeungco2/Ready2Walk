@@ -89,7 +89,13 @@
         android:layout_marginRight="3dp"
         android:layout_below="@id/UserInfo3"
         android:text="22"/>
-    
+    <TextView
+        android:id="@+id/UserUnit4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/UserAge"
+        android:layout_below="@id/UserInfo3"
+        android:text="Years"/>
 
 
     <Button
