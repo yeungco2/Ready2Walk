@@ -74,6 +74,46 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"/>
 
+    <TextView
+        android:id="@+id/UserInfo4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/UserWeight"
+        android:layout_centerHorizontal="true"
+        android:layout_marginRight="3dp"
+        android:text="Age:"/>
+    <TextView
+        android:id="@+id/UserAge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/UserInfo4"
+        android:layout_marginRight="3dp"
+        android:layout_below="@id/UserInfo3"
+        android:text="22"/>
+    <TextView
+        android:id="@+id/UserUnit4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/UserAge"
+        android:layout_below="@id/UserInfo3"
+        android:text="Years"/>
+
+    <TextView
+        android:id="@+id/UserInfo5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/UserAge"
+        android:layout_centerHorizontal="true"
+        android:layout_marginRight="3dp"
+        android:text="Gender:"/>
+    <TextView
+        android:id="@+id/UserGender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/UserInfo5"
+        android:layout_marginRight="3dp"
+        android:layout_below="@id/UserInfo4"
+        android:text="Male"/>
 
     <Button
         android:id="@+id/button"

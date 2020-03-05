@@ -23,6 +23,8 @@
             android:id="@+id/action_homeFragment_to_appInfoFragment"
             app:destination="@id/appInfoFragment" />
     </fragment>
+
+
     <fragment
         android:id="@+id/samplingFragment"
         android:name="com.example.cauliflower.ready2walk.UI.SamplingFragment"
