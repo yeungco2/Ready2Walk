@@ -11,6 +11,8 @@ import com.example.cauliflower.ready2walk.Database.SessionsDatabase
 import com.example.cauliflower.ready2walk.R
 import com.example.cauliflower.ready2walk.UI.SessionViewArgs
 import com.example.cauliflower.ready2walk.UI.SessionViewDirections
+import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
 import kotlinx.android.synthetic.main.fragment_session_view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +26,9 @@ class SessionView : BaseFragment()  {
 
     //received note
     private var session: Sessions? = null
+
+    // vars
+    private lateinit var sessionGraphSeries:LineGraphSeries<DataPoint>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,10 +47,32 @@ class SessionView : BaseFragment()  {
         //receive arguments
         arguments?.let {
             session = SessionViewArgs.fromBundle(it).sessions
-            // do stuff with the session passed
-            dateSummary.text = session?.accelerometerData.toString()
+            // do stuff with the session passed DEBUG show acc data
+            //sessionDataList.text = session?.accelerometerData.toString()
         }
+
+        //graph the session data
+        graphSession()
     }
+
+    // take session data and graph
+    private fun graphSession(){
+        sessionGraphSeries = LineGraphSeries<DataPoint>()
+        val dataSize = session!!.accelerometerData.toList().size
+        var timeX:Double = 0.0
+        var accY:Double = 0.0
+
+        for((index, value) in session!!.accelerometerData.toList().withIndex()){
+            System.out.println("index: " + index + ", value: " + value)
+            timeX = index.toDouble()
+            accY = value.toDouble()
+
+
+            sessionGraphSeries.appendData(DataPoint(timeX, accY), true, dataSize)
+        }
+        sessionGraph.addSeries(sessionGraphSeries)
+    }
+
 
     private fun deleteSession(){
         AlertDialog.Builder(context).apply {

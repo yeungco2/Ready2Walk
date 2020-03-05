@@ -40,6 +40,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
     var running  = false
     var accelerometerData: MutableList<Float> = mutableListOf()
     var sessionDate: String = String()
+    var sessionSamplingPeriodUs: Int = 1000
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,7 +65,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
 
         //functionality start button
         startButton.setOnClickListener {
-            sensorManager!!.registerListener(this, phoneAccelerometer, SensorManager.SENSOR_DELAY_NORMAL)
+            sensorManager!!.registerListener(this, phoneAccelerometer, 1000)
             activity!!.toast("Session Started") //send verification message
 
         }
@@ -80,7 +81,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                     sessionDate = Calendar.getInstance().time.toString()
 
                     //push into database
-                    val session = Sessions(sessionDate, sessionAccelerometer)
+                    val session = Sessions(sessionDate, sessionAccelerometer, sessionSamplingPeriodUs)
                     SessionsDatabase(it).getSessionsDao().addSession(session)
                     it.toast("Session Saved")
                 }

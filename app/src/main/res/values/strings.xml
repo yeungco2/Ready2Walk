@@ -5,6 +5,9 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
+
+    <string name="Sessions">Sessions</string>
+
     <string name="user_name"> Bobby </string>
     <string name="user_height"> 153 </string>
     <string name="user_weight"> 65 </string>
