@@ -7,7 +7,9 @@ import java.io.Serializable
 @Entity(tableName = "sessions_table")
 data class Sessions (
     val sessionDate: String,
-    var accelerometerData: List<Float>
+    var accelerometerData: List<Float>,
+    val samplePeriodUs: Int
+
 
     //val time: Vector<Int>
     //val gyroscopeData: vector

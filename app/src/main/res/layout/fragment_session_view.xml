@@ -5,10 +5,20 @@
     android:layout_height="match_parent"
     tools:context="com.example.cauliflower.ready2walk.UI.SessionView">
 
+     <com.jjoe64.graphview.GraphView
+         android:id="@+id/sessionGraph"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         />
+
+
+     <!--DEBUG data>
      <TextView
-        android:id="@+id/dateSummary"
+        android:id="@+id/sessionDataList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="@string/Sessions" />
+     <-->
+
 
 </FrameLayout>
