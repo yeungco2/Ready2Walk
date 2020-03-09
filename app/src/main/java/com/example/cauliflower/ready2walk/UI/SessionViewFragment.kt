@@ -1,6 +1,7 @@
 package com.example.cauliflower.ready2walk.UI
 
 import android.app.AlertDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -11,6 +12,9 @@ import com.example.cauliflower.ready2walk.Database.SessionsDatabase
 import com.example.cauliflower.ready2walk.R
 import com.example.cauliflower.ready2walk.UI.SessionViewArgs
 import com.example.cauliflower.ready2walk.UI.SessionViewDirections
+import com.jjoe64.graphview.GraphView
+import com.jjoe64.graphview.GridLabelRenderer
+import com.jjoe64.graphview.LegendRenderer
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import kotlinx.android.synthetic.main.fragment_session_view.*
@@ -29,6 +33,7 @@ class SessionView : BaseFragment()  {
 
     // vars
     private lateinit var sessionGraphSeries:LineGraphSeries<DataPoint>
+    private lateinit var sessionAutocorrSeries:LineGraphSeries<DataPoint>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,19 +63,47 @@ class SessionView : BaseFragment()  {
     // take session data and graph
     private fun graphSession(){
         sessionGraphSeries = LineGraphSeries<DataPoint>()
+        sessionAutocorrSeries = LineGraphSeries<DataPoint>()
         val dataSize = session!!.accelerometerData.toList().size
-        var timeX:Double = 0.0
-        var accY:Double = 0.0
+        var timeX = 0.0
+        var accY = 0.0
+        var autocorrY = 0.0
 
         for((index, value) in session!!.accelerometerData.toList().withIndex()){
             System.out.println("index: " + index + ", value: " + value)
             timeX = index.toDouble()
             accY = value.toDouble()
-
-
+            autocorrY = accY+10
+            // obtain autocorrelation series
+            /*
+            for (i in session!!.accelerometerData.toList()) {
+                autocorrY += i * session!!.accelerometerData.toList().get(i+)
+            }
+            */
             sessionGraphSeries.appendData(DataPoint(timeX, accY), true, dataSize)
+            sessionAutocorrSeries.appendData(DataPoint(timeX+50 , autocorrY), true, dataSize)
         }
-        sessionGraph.addSeries(sessionGraphSeries)
+        plotGraph(sessionGraph, sessionGraphSeries, "Real Time Graph")
+        plotGraph(sessionAutocorrGraph, sessionAutocorrSeries, "Auto Correlation Graph")
+
+    }
+
+    // Plot graph at graphID in XML, given LineGraphSeries and title
+    private fun plotGraph(graph:GraphView, series:LineGraphSeries<DataPoint>, title:String) {
+        series.title = title
+        graph.addSeries(series)
+        graph.viewport.isScalable = true
+        graph.viewport.isScalable = true
+        graph.viewport.setScalableY(true)
+        graph.viewport.borderColor = Color.BLACK
+        graph.legendRenderer.apply {
+            isVisible = true
+            align = LegendRenderer.LegendAlign.BOTTOM
+        }
+        graph.gridLabelRenderer.apply {
+            gridColor = Color.BLACK
+        }
+
     }
 
 

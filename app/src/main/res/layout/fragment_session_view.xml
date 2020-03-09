@@ -8,9 +8,15 @@
      <com.jjoe64.graphview.GraphView
          android:id="@+id/sessionGraph"
          android:layout_width="match_parent"
-         android:layout_height="wrap_content"
+         android:layout_height="300dp"
+         android:layout_gravity="top"
          />
-
+     <com.jjoe64.graphview.GraphView
+         android:id="@+id/sessionAutocorrGraph"
+         android:layout_width="match_parent"
+         android:layout_height="300dp"
+         android:layout_gravity="bottom"
+         />
 
      <!--DEBUG data>
      <TextView
