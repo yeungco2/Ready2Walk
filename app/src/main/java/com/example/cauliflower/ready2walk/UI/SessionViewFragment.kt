@@ -30,6 +30,7 @@ class SessionView : BaseFragment()  {
 
     //received note
     private var session: Sessions? = null
+    private val MICROSECONDSOVERSECONDS = 1000000
 
     // vars
     private lateinit var sessionGraphSeries:LineGraphSeries<DataPoint>
@@ -69,23 +70,21 @@ class SessionView : BaseFragment()  {
         var accY = 0.0
         var autocorrY = 0.0
 
+        //save data
         for((index, value) in session!!.accelerometerData.toList().withIndex()){
             System.out.println("index: " + index + ", value: " + value)
-            timeX = index.toDouble()
+            timeX = index.toDouble()*session!!.samplePeriodUs/MICROSECONDSOVERSECONDS //to get time
             accY = value.toDouble()
-            autocorrY = accY+10
             // obtain autocorrelation series
-            /*
-            for (i in session!!.accelerometerData.toList()) {
-                autocorrY += i * session!!.accelerometerData.toList().get(i+)
+            for ((jindex, jvalue) in session!!.accelerometerData.toList().withIndex()) {
+                autocorrY += jvalue * session!!.accelerometerData.toList().get((jindex+index) % dataSize)
             }
-            */
+
             sessionGraphSeries.appendData(DataPoint(timeX, accY), true, dataSize)
-            sessionAutocorrSeries.appendData(DataPoint(timeX+50 , autocorrY), true, dataSize)
+            sessionAutocorrSeries.appendData(DataPoint(timeX , autocorrY/(dataSize - index)), true, dataSize)
         }
         plotGraph(sessionGraph, sessionGraphSeries, "Real Time Graph")
         plotGraph(sessionAutocorrGraph, sessionAutocorrSeries, "Auto Correlation Graph")
-
     }
 
     // Plot graph at graphID in XML, given LineGraphSeries and title
@@ -105,6 +104,7 @@ class SessionView : BaseFragment()  {
         }
 
     }
+
 
 
     private fun deleteSession(){
