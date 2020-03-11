@@ -10,9 +10,71 @@
         android:id="@+id/UserInfo1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_below="@+id/editText"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="27dp"
         android:layout_marginRight="3dp"
-        android:text="Hello World!" />
+        android:layout_marginBottom="640dp"
+        android:text="Welcome To Ready2Walk!" />
+
+    <TextView
+        android:id="@+id/UserInfo2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editText"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="63dp"
+        android:layout_marginEnd="328dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginBottom="604dp"
+        android:text="Disclaimer" />
+
+    <TextView
+        android:id="@+id/UserInfo3"
+        android:layout_width="383dp"
+        android:layout_height="168dp"
+        android:layout_below="@+id/editText"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="92dp"
+        android:layout_marginEnd="17dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginBottom="426dp"
+        android:text="This application is meant to serve as an aid for rehabilitation, and not as a substitute for the instruction from a trained medical professional. Please consult the advice of a tranined medical professional, before and while you use this program. " />
+
+    <TextView
+        android:id="@+id/UserInfo3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editText"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="9dp"
+        android:layout_marginTop="209dp"
+        android:layout_marginEnd="236dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginBottom="458dp"
+        android:text="Introduction" />
+
+    <TextView
+        android:id="@+id/UserInfo4"
+        android:layout_width="383dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editText"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="254dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginBottom="297dp"
+        android:text="Thank you for downloading Ready2Walk! We hope that you are able to use this application to improve your rehabilitation proccess as you become accustomed to your prosthetic device. The purpose of this application is to provide your health care team with information about your mobility while wearing the prosthetic." />
 
     <EditText
         android:id="@+id/editText"
@@ -26,5 +88,5 @@
         android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="false"
         android:layout_centerHorizontal="true"
-        android:text="Update Info" />
+        android:text="Introduction and Instructions" />
 </RelativeLayout>
