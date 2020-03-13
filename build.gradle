@@ -9,7 +9,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:3.6.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         //Navigation safe Args
@@ -23,7 +23,7 @@ buildscript {
     }
 
     ext {
-        roomVersion = '2.2.3'
+        roomVersion = '2.2.4'
         archLifecycleVersion = '2.2.0-rc03'
         androidxArchVersion = '2.1.0'
         coreTestingVersion = "2.1.0"

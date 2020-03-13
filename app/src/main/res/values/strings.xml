@@ -8,6 +8,7 @@
 
     <string name="Sessions">Sessions</string>
 
+    <!--Name of Strings Used in User Info -->
     <string name="user_name"> Bobby </string>
     <string name="user_height"> 153 </string>
     <string name="user_weight"> 65 </string>
@@ -16,6 +17,10 @@
     <string name="user_info3"> Weight: </string>
     <string name="user_unit2"> cm </string>
     <string name="user_unit3"> kg </string>
+
+    <string name="save"> Save </string>
+    <string name="cancel"> Cancel </string>
+
     <!-- Name of App Pages (Activities). Please make the names all begin with Capital Letters-->
     <string name="Home"> BME Capstone Project</string>
     <string name="Sampling"> Sampling </string>

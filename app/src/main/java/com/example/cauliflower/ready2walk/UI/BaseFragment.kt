@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.Job
+import java.io.FileInputStream
 
 abstract class BaseFragment : Fragment(){
 

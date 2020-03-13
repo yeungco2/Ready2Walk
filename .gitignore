@@ -1,4 +1,4 @@
-.idea/
+.idea/*
 *.iml
 .gradle
 /local.properties
@@ -11,3 +11,4 @@
 build.gradle
 local.properties
 settings.gradle
+.idea/modules.xml
