@@ -9,133 +9,156 @@
     app:layout_constraintRight_toRightOf="parent"
 
 
+
+    <LinearLayout
+        android:id="@+id/UI1"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <TextView
         android:id="@+id/UserInfo1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_centerVertical="true"
         android:layout_marginRight="3dp"
         android:text="@string/user_info1" />
-    <TextView
-        android:id="@+id/UserName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/UserInfo1"
-        android:text="@string/user_name" />
-
-    <TextView
-        android:id="@+id/UserInfo2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/UserName"
-        android:layout_centerHorizontal="true"
-        android:layout_marginRight="3dp"
-        android:text="@string/user_info2" />
-    <TextView
-        android:id="@+id/UserHeight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/UserInfo1"
-        android:layout_toRightOf="@id/UserInfo2"
-        android:text="@string/user_height"/>
-    <TextView
-        android:id="@+id/UserUnit2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/UserHeight"
-        android:layout_below="@id/UserInfo1"
-        android:text="@string/user_unit2" />
-
-    <TextView
-        android:id="@+id/UserInfo3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/UserInfo2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginRight="3dp"
-        android:text="@string/user_info3" />
-    <TextView
-        android:id="@+id/UserWeight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/UserInfo3"
-        android:layout_marginRight="3dp"
-        android:layout_below="@id/UserInfo2"
-        android:text="@string/user_weight"/>
-    <TextView
-        android:id="@+id/UserUnit3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/UserInfo2"
-        android:layout_toRightOf="@id/UserWeight"
-        android:layout_marginRight="3dp"
-        android:text="@string/user_unit3"/>
-
-    <!--User Input-->
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/UserName"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"/>
+        android:layout_toRightOf="@id/UserInfo1"
+        android:text="" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/UserInfo4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/UserWeight"
-        android:layout_centerHorizontal="true"
-        android:layout_marginRight="3dp"
-        android:text="Age:"/>
-    <TextView
-        android:id="@+id/UserAge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/UserInfo4"
-        android:layout_marginRight="3dp"
-        android:layout_below="@id/UserInfo3"
-        android:text="22"/>
-    <TextView
-        android:id="@+id/UserUnit4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/UserAge"
-        android:layout_below="@id/UserInfo3"
-        android:text="Years"/>
+    <View
+        android:id="@+id/Line1"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@+id/UI1"/>
 
-    <TextView
-        android:id="@+id/UserInfo5"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/UI2"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/UserAge"
-        android:layout_centerHorizontal="true"
-        android:layout_marginRight="3dp"
-        android:text="Gender:"/>
-    <TextView
-        android:id="@+id/UserGender"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/UserInfo5"
-        android:layout_marginRight="3dp"
-        android:layout_below="@id/UserInfo4"
-        android:text="Male"/>
+        android:layout_below="@+id/Line1">
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignWithParentIfMissing="false"
-        android:layout_centerHorizontal="true"
-        android:text="Update Info" />
-    <!--android:onClick="sendMessage" -->
-    <!--android:layout_below="@id/UserName" -->
+        <TextView
+            android:id="@+id/UserInfo2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:text="@string/user_info2" />
+        <EditText
+            android:id="@+id/UserHeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/UserInfo2"
+            android:text="" />
+    </LinearLayout>
 
+    <View
+        android:id="@+id/Line2"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@+id/UI2"/>
+    <LinearLayout
+        android:id="@+id/UI3"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Line2">
+
+        <TextView
+            android:id="@+id/UserInfo3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:text="@string/user_info3" />
+        <EditText
+            android:id="@+id/UserWeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/UserInfo3"
+            android:text="" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/Line3"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@+id/UI3"/>
+
+    <LinearLayout
+        android:id="@+id/UI4"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Line3">
+
+        <TextView
+            android:id="@+id/UserInfo4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:text="@string/user_info4" />
+        <EditText
+            android:id="@+id/UserAge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/UserInfo4"
+            android:text="" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/Line4"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@+id/UI4"/>
+
+    <LinearLayout
+        android:id="@+id/UI5"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Line4">
+
+        <TextView
+            android:id="@+id/UserInfo5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:text="@string/user_info5" />
+        <EditText
+            android:id="@+id/UserGender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/UserInfo5"
+            android:text="" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/Line5"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@+id/UI5"/>
+    <!--Button for Saving Info-->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/UserGender"
-        >
+        android:layout_centerVertical="true"
+        android:layout_below="@id/Line5">
 
     <Button
         android:id="@+id/ButtonSave"
@@ -143,14 +166,12 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_weight="1"
-        android:layout_below="@id/UserGender"
         android:text="@string/save"/>
 
     <Button
-        android:id="@+id/buttonCancel"
+        android:id="@+id/ButtonCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/UserGender"
         android:layout_marginRight="40dp"
         android:layout_toRightOf="@id/ButtonSave"
         android:layout_weight="1"

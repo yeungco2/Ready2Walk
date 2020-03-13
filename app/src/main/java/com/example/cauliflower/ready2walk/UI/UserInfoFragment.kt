@@ -6,6 +6,7 @@ package com.example.cauliflower.ready2walk.UI
     import android.view.LayoutInflater
     import android.view.View
     import android.view.ViewGroup
+    import android.widget.EditText
     import androidx.appcompat.app.AppCompatActivity
     import com.example.cauliflower.ready2walk.R
     import kotlinx.android.synthetic.main.fragment_user_info.*
@@ -30,11 +31,18 @@ class UserInfoFragment : BaseFragment()  {
         return inflater.inflate(R.layout.fragment_user_info, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        val filename = "userInfo"
+    //Saves User Input Data into System Memory
+    fun saveData(message: String, box: EditText, filename: String) {
+        var fileContents = message;
+        if(!message.isEmpty()) {
+            context?.openFileOutput(filename, Context.MODE_PRIVATE).use {
+                it?.write(fileContents.toByteArray())
+            }
+            box.setText(fileContents);
+        }
+    }
 
-
+    fun loadDefault(filename:String, box: EditText, default_string: String){
         val file = File(context?.filesDir, filename);
 
         if(file.exists()) {
@@ -43,22 +51,47 @@ class UserInfoFragment : BaseFragment()  {
             val bufferedReader = BufferedReader(inputStreamReader);
             val sb = StringBuilder();
             var line = bufferedReader.readLine();
-            UserName.setText(line);
-            inputStreamReader.close()
+            box.setText(line);
+            inputStreamReader.close();
         }else{
-            UserName.setText("Bobby");
+            UserName.setText(default_string);
         }
+    }
 
+
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        val user_name = "userName"
+        val user_height = "userHeight"
+        val user_weight = "userWeight"
+        val user_age = "userAge"
+        val user_gender = "userGender"
+
+        loadDefault(user_name, UserName, "Bobby");
+        loadDefault(user_weight, UserWeight, "155");
+        loadDefault(user_height, UserHeight, "150");
+        loadDefault(user_age, UserAge, "20");
+        loadDefault(user_gender, UserGender, "Male");
+
+        ButtonCancel.setOnClickListener(){
+            //Basically disregards the data in the text box and loads what was saved in memory previously
+            loadDefault(user_name, UserName, "Bobby");
+            loadDefault(user_weight, UserWeight, "155");
+            loadDefault(user_height, UserHeight, "150");
+            loadDefault(user_age, UserAge, "20");
+            loadDefault(user_gender, UserGender, "Male");
+        }
         //Save the data in the User Info
         ButtonSave.setOnClickListener {
-            val message = editText.text.toString();
-            //TODO: Find a way to save the data so it can accessed on load
-            val fileContents = message;
+            //Load through all user data and save them locally
 
-            context?.openFileOutput(filename, Context.MODE_PRIVATE).use {
-                it?.write(fileContents.toByteArray())
-            }
-            UserName.setText(message);
+            saveData(UserName.text.toString(), UserName, user_name);
+            saveData(UserHeight.text.toString(), UserHeight, user_height);
+            saveData(UserWeight.text.toString(), UserWeight, user_weight);
+            saveData(UserAge.text.toString(), UserAge, user_age);
+            saveData(UserGender.text.toString(),UserGender, user_gender);
+
             activity!!.toast("Info Saved") //send verification message
         }
     }

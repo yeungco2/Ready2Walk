@@ -15,8 +15,8 @@
     <string name="user_info1"> Name: </string>
     <string name="user_info2"> Height: </string>
     <string name="user_info3"> Weight: </string>
-    <string name="user_unit2"> cm </string>
-    <string name="user_unit3"> kg </string>
+    <string name="user_info4"> Age: </string>
+    <string name="user_info5"> Gender:</string>
 
     <string name="save"> Save </string>
     <string name="cancel"> Cancel </string>
