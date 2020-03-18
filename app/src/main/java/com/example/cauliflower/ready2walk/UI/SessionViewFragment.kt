@@ -65,24 +65,26 @@ class SessionView : BaseFragment()  {
     private fun graphSession(){
         sessionGraphSeries = LineGraphSeries<DataPoint>()
         sessionAutocorrSeries = LineGraphSeries<DataPoint>()
-        val dataSize = session!!.accelerometerData.toList().size
+        val dataSizeAccelerometer = session!!.accelerometerData.toList().size
+        val dataSizeAutocorrelation = session!!.autocorrelationData.toList().size
         var timeX = 0.0
         var accY = 0.0
-        var autocorrY = 0.0
+
 
         //save data
         for((index, value) in session!!.accelerometerData.toList().withIndex()){
-            System.out.println("index: " + index + ", value: " + value)
+            //System.out.println("index: " + index + ", value: " + value)
             timeX = index.toDouble()*session!!.samplePeriodUs/MICROSECONDSOVERSECONDS //to get time
             accY = value.toDouble()
-            // obtain autocorrelation series
-            for ((jindex, jvalue) in session!!.accelerometerData.toList().withIndex()) {
-                autocorrY += jvalue * session!!.accelerometerData.toList().get((jindex+index) % dataSize)
-            }
-
-            sessionGraphSeries.appendData(DataPoint(timeX, accY), true, dataSize)
-            sessionAutocorrSeries.appendData(DataPoint(timeX , autocorrY/(dataSize - index)), true, dataSize)
+            // Fill graph series
+            sessionGraphSeries.appendData(DataPoint(timeX, accY), true, dataSizeAccelerometer)
+            //sessionAutocorrSeries.appendData(DataPoint(timeX , autocorrY/(dataSize - index)), true, dataSize)
         }
+        for((index, value) in session!!.autocorrelationData.toList().withIndex()) {
+            // Fill graph series
+            sessionAutocorrSeries.appendData(DataPoint(index.toDouble(), value.toDouble()), true, dataSizeAutocorrelation)
+        }
+        // Plot lines
         plotGraph(sessionGraph, sessionGraphSeries, "Real Time Graph")
         plotGraph(sessionAutocorrGraph, sessionAutocorrSeries, "Auto Correlation Graph")
     }
@@ -104,8 +106,6 @@ class SessionView : BaseFragment()  {
         }
 
     }
-
-
 
     private fun deleteSession(){
         AlertDialog.Builder(context).apply {

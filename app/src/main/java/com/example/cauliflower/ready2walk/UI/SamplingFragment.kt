@@ -35,16 +35,21 @@ import java.util.*
  */
 class SamplingFragment : BaseFragment(), SensorEventListener {
 
+    // Create sensors to be used
     private var sensorManager: SensorManager? = null
     var phoneAccelerometer: Sensor? = null
-    var running  = false
+    var phoneStepSensor: Sensor? = null
+
+
     var accelerometerData: MutableList<Float> = mutableListOf()
+    var autocorrelationData: MutableList<Float> = mutableListOf()
+    var autocorrelationRawData: MutableList<Float> = mutableListOf()
     var sessionDate: String = String()
     var sessionSamplingPeriodUs: Int = 1000
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         //Setting the Title of the Fragment Page
         (context as AppCompatActivity).supportActionBar!!.title = activity!!.resources.getString(R.string.Sampling)
@@ -61,29 +66,62 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         //intialize sensor service (dont forget the activity instance)
         sensorManager = activity!!.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         phoneAccelerometer = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        phoneStepSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
         //sensorManager!!.unregisterListener(this)
 
         //functionality start button
         startButton.setOnClickListener {
+            //Register Sensors
             sensorManager!!.registerListener(this, phoneAccelerometer, 1000)
+            sensorManager!!.registerListener(this, phoneStepSensor, SensorManager.SENSOR_DELAY_NORMAL)
             activity!!.toast("Session Started") //send verification message
+
 
         }
         //functionality stop button
         stopButton.setOnClickListener {
             //stopSampling
             sensorManager!!.unregisterListener(this)
-            //save data
+
+            //Create coroutine for auto correlation and saving session
             CoroutineScope(Dispatchers.Main + job1).launch {
                 context?.let {
-                    //Create session entry
-                    var sessionAccelerometer = accelerometerData.toList()
-                    sessionDate = Calendar.getInstance().time.toString()
+                    if ((accelerometerData.isEmpty() == false) || (accelerometerData.isEmpty() == false)) {
+                        var autocorrK = 0.0
+                        var autocorr0= 0.0
+                        val dataSize = autocorrelationRawData.toList().size
+                        var meanRaw = (autocorrelationRawData.sum())/dataSize
 
-                    //push into database
-                    val session = Sessions(sessionDate, sessionAccelerometer, sessionSamplingPeriodUs)
-                    SessionsDatabase(it).getSessionsDao().addSession(session)
-                    it.toast("Session Saved")
+                        // Perform autocorrelation
+                        for ((k, value) in autocorrelationRawData.toList().withIndex()) {
+                            System.out.println("index: " + k + ", value: " + value)
+                            // obtain autocorrelation series
+                            for ((i, ivalue) in autocorrelationRawData.toList().withIndex()) {
+                                autocorrK += ((ivalue - meanRaw) *
+                                        (autocorrelationRawData.toList().get((k + i)%(dataSize-1)) - meanRaw))
+                            }
+                            if(k == 0){
+                                autocorr0 = autocorrK
+                            }
+                            autocorrelationData.add((autocorrK/autocorr0).toFloat())
+                        }
+                        it.toast("Autocorrelation Finished")
+                        if (autocorrelationData.isEmpty() == false) {
+                            //Create session entry
+                            var sessionAccelerometer = accelerometerData.toList()
+                            var sessionAutocorrelation = autocorrelationData.toList()
+                            sessionDate = Calendar.getInstance().time.toString()
+                            //push into database
+                            val session = Sessions(sessionDate, sessionAccelerometer, sessionAutocorrelation, sessionSamplingPeriodUs)
+                            SessionsDatabase(it).getSessionsDao().addSession(session)
+                            it.toast("Session Saved")
+                        }
+                        else{
+                            it.toast("Steps not found, Try Again")
+                        }
+                    } else {
+                        it.toast("Nothing is Saved")
+                    }
                 }
             }
         }
@@ -95,8 +133,15 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null) {
             if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-                accelerometerData.add(event.values[0])
+                accelerometerData.add(event.values[0]) // Extract acceleration in Medilateral direction
+                //System.out.println("step1")
             }
+
+            if (event.sensor.type == Sensor.TYPE_STEP_DETECTOR) {
+                autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
+                //System.out.println("step2")
+            }
+
         }
     }
 

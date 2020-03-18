@@ -8,6 +8,7 @@ import java.io.Serializable
 data class Sessions (
     val sessionDate: String,
     var accelerometerData: List<Float>,
+    var autocorrelationData: List<Float>,
     val samplePeriodUs: Int
 
 
