@@ -69,4 +69,7 @@ dependencies {
     //graphview
     implementation "com.jjoe64:graphview:4.2.2"
 
+    // Activity
+    implementation "com.google.android.gms:play-services-location:17.0.0"
+
 }

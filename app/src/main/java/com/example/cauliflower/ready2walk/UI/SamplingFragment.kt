@@ -1,6 +1,7 @@
 package com.example.cauliflower.ready2walk.UI
 
 
+import android.app.Activity
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -73,9 +74,17 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         startButton.setOnClickListener {
             //Register Sensors
             sensorManager!!.registerListener(this, phoneAccelerometer, 1000)
-            sensorManager!!.registerListener(this, phoneStepSensor, SensorManager.SENSOR_DELAY_NORMAL)
+            sensorManager!!.registerListener(this, phoneStepSensor,
+                    SensorManager.SENSOR_DELAY_FASTEST, SensorManager.SENSOR_STATUS_ACCURACY_HIGH)
             activity!!.toast("Session Started") //send verification message
 
+            // check if step sensor is available
+            if (sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
+                activity!!.toast("you have a step sensor") //send verification message
+            }
+            else {
+                activity!!.toast("Step sensor not found") //send verification message
+            }
 
         }
         //functionality stop button
@@ -88,22 +97,22 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 context?.let {
                     if ((accelerometerData.isEmpty() == false) || (accelerometerData.isEmpty() == false)) {
                         var autocorrK = 0.0
-                        var autocorr0= 0.0
+                        var autocorr0 = 0.0
                         val dataSize = autocorrelationRawData.toList().size
-                        var meanRaw = (autocorrelationRawData.sum())/dataSize
+                        var meanRaw = (autocorrelationRawData.sum()) / dataSize
 
                         // Perform autocorrelation
-                        for ((k, value) in autocorrelationRawData.toList().withIndex()) {
+                        for ((k, value) in autocorrelationRawData.withIndex()) {
                             System.out.println("index: " + k + ", value: " + value)
                             // obtain autocorrelation series
-                            for ((i, ivalue) in autocorrelationRawData.toList().withIndex()) {
+                            for ((i, ivalue) in autocorrelationRawData.withIndex()) {
                                 autocorrK += ((ivalue - meanRaw) *
-                                        (autocorrelationRawData.toList().get((k + i)%(dataSize-1)) - meanRaw))
+                                        (autocorrelationRawData.toList().get((k + i) % (dataSize - 1)) - meanRaw))
                             }
-                            if(k == 0){
+                            if (k == 0) {
                                 autocorr0 = autocorrK
                             }
-                            autocorrelationData.add((autocorrK/autocorr0).toFloat())
+                            autocorrelationData.add((autocorrK / autocorr0).toFloat())
                         }
                         it.toast("Autocorrelation Finished")
                         if (autocorrelationData.isEmpty() == false) {
@@ -115,8 +124,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                             val session = Sessions(sessionDate, sessionAccelerometer, sessionAutocorrelation, sessionSamplingPeriodUs)
                             SessionsDatabase(it).getSessionsDao().addSession(session)
                             it.toast("Session Saved")
-                        }
-                        else{
+                        } else {
                             it.toast("Steps not found, Try Again")
                         }
                     } else {
@@ -140,6 +148,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             if (event.sensor.type == Sensor.TYPE_STEP_DETECTOR) {
                 autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
                 //System.out.println("step2")
+                //context?.toast("you have step sensor")
             }
 
         }
