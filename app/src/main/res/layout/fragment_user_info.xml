@@ -3,11 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.cauliflower.ready2walk.UI.UserInfoFragment">
+    tools:context="com.example.cauliflower.ready2walk.UI.UserInfoFragment"
+    android:background="?attr/bgColor">
+
+    <!-- Don't think this code does anything
     android:orientation="horizontal"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
-
+    -->
 
 
     <LinearLayout
@@ -21,13 +24,17 @@
         android:id="@+id/UserInfo1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="3dp"
+        android:layout_marginEnd="3dp"
+        android:textColor="?attr/textColor"
         android:text="@string/user_info1" />
     <EditText
         android:id="@+id/UserName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/UserInfo1"
+        android:textColor="?attr/textColor"
+        android:inputType="text"
+        android:autofillHints="Enter a Name"
+        android:hint="Enter a Name"
         android:text="" />
     </LinearLayout>
 
@@ -41,7 +48,6 @@
     <LinearLayout
         android:id="@+id/UI2"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/Line1">
@@ -50,13 +56,17 @@
             android:id="@+id/UserInfo2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="3dp"
+            android:layout_marginEnd="3dp"
+            android:textColor="?attr/textColor"
             android:text="@string/user_info2" />
         <EditText
             android:id="@+id/UserHeight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/UserInfo2"
+            android:textColor="?attr/textColor"
+            android:inputType="text"
+            android:autofillHints="Enter Height"
+            android:hint="Enter Height"
             android:text="" />
     </LinearLayout>
 
@@ -69,7 +79,6 @@
     <LinearLayout
         android:id="@+id/UI3"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/Line2">
@@ -78,13 +87,17 @@
             android:id="@+id/UserInfo3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="3dp"
+            android:layout_marginEnd="3dp"
+            android:textColor="?attr/textColor"
             android:text="@string/user_info3" />
         <EditText
             android:id="@+id/UserWeight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/UserInfo3"
+            android:textColor="?attr/textColor"
+            android:inputType="text"
+            android:autofillHints="Enter Weight"
+            android:hint="Enter Weight"
             android:text="" />
     </LinearLayout>
 
@@ -107,13 +120,17 @@
             android:id="@+id/UserInfo4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="3dp"
+            android:layout_marginEnd="3dp"
+            android:textColor="?attr/textColor"
             android:text="@string/user_info4" />
         <EditText
             android:id="@+id/UserAge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/UserInfo4"
+            android:textColor="?attr/textColor"
+            android:inputType="text"
+            android:autofillHints="Enter Age"
+            android:hint="Enter Age"
             android:text="" />
     </LinearLayout>
 
@@ -136,13 +153,17 @@
             android:id="@+id/UserInfo5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="3dp"
+            android:layout_marginEnd="3dp"
+            android:textColor="?attr/textColor"
             android:text="@string/user_info5" />
         <EditText
             android:id="@+id/UserGender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/UserInfo5"
+            android:textColor="?attr/textColor"
+            android:inputType="text"
+            android:autofillHints="Enter Gender"
+            android:hint="Enter Gender"
             android:text="" />
     </LinearLayout>
 
@@ -155,9 +176,10 @@
     <!--Button for Saving Info-->
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:id="@+id/Buttons"
         android:layout_below="@id/Line5">
 
     <Button
@@ -176,6 +198,24 @@
         android:layout_toRightOf="@id/ButtonSave"
         android:layout_weight="1"
         android:text="@string/cancel"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_below="@id/Buttons">
+
+    <Button
+        android:id="@+id/tvChangeTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
+        android:layout_margin="8dp"
+        android:text="Change Theme"
+        android:layout_below="@id/Line5"
+        android:textSize="16sp"/>
     </LinearLayout>
 
 </RelativeLayout>

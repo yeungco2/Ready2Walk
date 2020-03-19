@@ -10,6 +10,7 @@ package com.example.cauliflower.ready2walk.UI
     import androidx.appcompat.app.AppCompatActivity
     import com.example.cauliflower.ready2walk.R
     import kotlinx.android.synthetic.main.activity_main.*
+    import kotlinx.android.synthetic.main.fragment_app_info.*
     import kotlinx.android.synthetic.main.fragment_user_info.*
 
 
@@ -31,10 +32,17 @@ package com.example.cauliflower.ready2walk.UI
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-/*
-        fun sendMessage() {
-            val message = editText.text.toString()
-            UserName.text = message
-        }*/
+        val disclaimer = "This application is meant to serve as an aid for rehabilitation, and not " +
+                "as a substitute for the instruction from a trained medical professional. " +
+                "Please consult the advice of a tranined medical professional, " +
+                "before and while you use this program. ";
+
+        val introduction = "Thank you for downloading Ready2Walk! We hope that you are able to use" +
+                "this application to improve your rehabilitation proccess as you become accustomed to" +
+                " your prosthetic device. The purpose of this application is to provide your health " +
+                "care team with information about your mobility while wearing the prosthetic.";
+
+        Disclaimer.setText(disclaimer);
+        Introduction.setText(introduction);
     }
 }

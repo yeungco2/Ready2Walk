@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.cauliflower.ready2walk.UI.SessionView">
+    tools:context="com.example.cauliflower.ready2walk.UI.SessionView"
+    android:background="?attr/bgColor">
 
      <com.jjoe64.graphview.GraphView
          android:id="@+id/sessionGraph"

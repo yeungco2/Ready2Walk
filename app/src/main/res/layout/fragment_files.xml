@@ -3,16 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.cauliflower.ready2walk.UI.FilesFragment">
+    tools:context="com.example.cauliflower.ready2walk.UI.FilesFragment"
+    android:background="?attr/bgColor">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:textColor="?attr/textColor"
         android:text="@string/hello_blank_fragment" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id = "@+id/recycler_view_files"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:textColor="?attr/textColor"/>
 
 </FrameLayout>
