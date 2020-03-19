@@ -100,15 +100,17 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                         var autocorr0 = 0.0
                         val dataSize = autocorrelationRawData.toList().size
                         var meanRaw = (autocorrelationRawData.sum()) / dataSize
+                        it.toast(dataSize.toString())
 
                         // Perform autocorrelation
                         for ((k, value) in autocorrelationRawData.withIndex()) {
                             System.out.println("index: " + k + ", value: " + value)
                             // obtain autocorrelation series
                             for ((i, ivalue) in autocorrelationRawData.withIndex()) {
-                                autocorrK += ((ivalue - meanRaw) *
-                                        (autocorrelationRawData.toList().get((k + i) % (dataSize - 1)) - meanRaw))
+                                autocorrK += (ivalue - meanRaw) *
+                                        (autocorrelationRawData.toList().get((k + i + 1) % (dataSize -k)) - meanRaw)
                             }
+                            autocorrK /= (dataSize - k)
                             if (k == 0) {
                                 autocorr0 = autocorrK
                             }
