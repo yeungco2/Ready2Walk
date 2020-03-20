@@ -43,6 +43,9 @@ class FilesFragment : BaseFragment() {// dont forget the base fragmet !!!!
         CoroutineScope(Dispatchers.Main + job1).launch {
             context?.let {
                 val allSessions = SessionsDatabase(it).getSessionsDao().getAllSessions()
+                if (allSessions.isEmpty()) {
+                    Default_Text.setText("You have no files")
+                }
                 recycler_view_files.adapter = SessionAdapter(allSessions)
             }
         }

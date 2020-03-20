@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textColor="?attr/textColor"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/Default_Text"
+        android:text="" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id = "@+id/recycler_view_files"
