@@ -3,6 +3,7 @@ package com.example.cauliflower.ready2walk.UI
 
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -78,6 +79,10 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                     SensorManager.SENSOR_DELAY_FASTEST, SensorManager.SENSOR_STATUS_ACCURACY_HIGH)
             activity!!.toast("Session Started") //send verification message
 
+            if (sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
+                activity!!.toast("you have a step sensor") //send verification message
+            }
+
             // check if step sensor is available
             if (sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
                 activity!!.toast("you have a step sensor") //send verification message
@@ -104,6 +109,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                         // Perform autocorrelation
                         for ((k, value) in autocorrelationRawData.withIndex()) {
                             System.out.println("index: " + k + ", value: " + value)
+                            autocorrK = 0.0
                             // obtain autocorrelation series
                             for ((i, ivalue) in autocorrelationRawData.withIndex()) {
                                 autocorrK += ((ivalue - meanRaw) *
@@ -112,7 +118,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                             if (k == 0) {
                                 autocorr0 = autocorrK
                             }
-                            autocorrelationData.add((autocorrK / autocorr0).toFloat())
+                            autocorrelationData.add((autocorrK / (autocorr0)).toFloat())
                         }
                         it.toast("Autocorrelation Finished")
                         if (autocorrelationData.isEmpty() == false) {
