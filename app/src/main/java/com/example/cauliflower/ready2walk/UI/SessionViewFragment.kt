@@ -8,12 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.cauliflower.ready2walk.Database.Sessions
 import com.example.cauliflower.ready2walk.Database.SessionsDatabase
-
 import com.example.cauliflower.ready2walk.R
-import com.example.cauliflower.ready2walk.UI.SessionViewArgs
-import com.example.cauliflower.ready2walk.UI.SessionViewDirections
 import com.jjoe64.graphview.GraphView
-import com.jjoe64.graphview.GridLabelRenderer
 import com.jjoe64.graphview.LegendRenderer
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
@@ -96,15 +92,18 @@ class SessionView : BaseFragment()  {
         graph.viewport.isScalable = true
         graph.viewport.isScalable = true
         graph.viewport.setScalableY(true)
-        graph.viewport.borderColor = Color.BLACK
+        graph.viewport.borderColor = Color.RED
+        graph.legendRenderer.textColor = Color.CYAN
+
         graph.legendRenderer.apply {
             isVisible = true
             align = LegendRenderer.LegendAlign.BOTTOM
         }
         graph.gridLabelRenderer.apply {
-            gridColor = Color.BLACK
+            gridColor = Color.RED //R.attr.textColor
+            verticalLabelsColor = Color.RED //R.attr.textColor
+            horizontalLabelsColor = Color.RED
         }
-
     }
 
     private fun deleteSession(){
