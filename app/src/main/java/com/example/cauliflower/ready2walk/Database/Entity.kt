@@ -9,7 +9,8 @@ data class Sessions (
     val sessionDate: String,
     var accelerometerData: List<Float>,
     var autocorrelationData: List<Float>,
-    val samplePeriodUs: Int
+    val samplePeriodUs: Int,
+    var gyroscopeData: List<Float>
 
 
     //val time: Vector<Int>

@@ -31,10 +31,11 @@ class SessionView : BaseFragment()  {
     // vars
     private lateinit var sessionGraphSeries:LineGraphSeries<DataPoint>
     private lateinit var sessionAutocorrSeries:LineGraphSeries<DataPoint>
+    private lateinit var sessionGyroscopeSeries:LineGraphSeries<DataPoint>
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         // Create option Menu
         setHasOptionsMenu(true)
@@ -51,20 +52,25 @@ class SessionView : BaseFragment()  {
             session = SessionViewArgs.fromBundle(it).sessions
             // do stuff with the session passed DEBUG show acc data
             //sessionDataList.text = session?.accelerometerData.toString()
+            //graph the session data
+            graphSession()
         }
 
-        //graph the session data
-        graphSession()
     }
 
     // take session data and graph
     private fun graphSession(){
         sessionGraphSeries = LineGraphSeries<DataPoint>()
         sessionAutocorrSeries = LineGraphSeries<DataPoint>()
+        sessionGyroscopeSeries = LineGraphSeries<DataPoint>()
+
         val dataSizeAccelerometer = session!!.accelerometerData.toList().size
         val dataSizeAutocorrelation = session!!.autocorrelationData.toList().size
+        val dataSizeGyroscope = session!!.gyroscopeData.toList().size
+
         var timeX = 0.0
         var accY = 0.0
+        var gyroY = 0.0
 
 
         //save data
@@ -81,8 +87,17 @@ class SessionView : BaseFragment()  {
             sessionAutocorrSeries.appendData(DataPoint(index.toDouble(), value.toDouble()), true, dataSizeAutocorrelation)
         }
         // Plot lines
+        //save
+        timeX = 0.0
+        for((index, value) in session!!.gyroscopeData.toList().withIndex()) {
+            timeX = index.toDouble()*session!!.samplePeriodUs/MICROSECONDSOVERSECONDS //to get time
+            gyroY = value.toDouble()
+            sessionGyroscopeSeries.appendData(DataPoint(timeX, gyroY), true, dataSizeGyroscope)
+        }
         plotGraph(sessionGraph, sessionGraphSeries, "Real Time Graph")
         plotGraph(sessionAutocorrGraph, sessionAutocorrSeries, "Auto Correlation Graph")
+        plotGraph(sessionGyroGraph, sessionGyroscopeSeries, "Gyroscope Graph")
+
     }
 
     // Plot graph at graphID in XML, given LineGraphSeries and title
@@ -126,7 +141,7 @@ class SessionView : BaseFragment()  {
         when(item.itemId){// in node is not null delete
             R.id.DeleteSession ->
                 if(session != null)
-                deleteSession()
+                    deleteSession()
                 else context?.toast("Cannot Delete")}
         return super.onOptionsItemSelected(item)
     }
