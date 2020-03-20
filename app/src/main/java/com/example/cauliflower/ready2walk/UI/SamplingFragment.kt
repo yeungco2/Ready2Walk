@@ -10,20 +10,14 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
-import android.provider.Contacts
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-
+import androidx.fragment.app.Fragment
 import com.example.cauliflower.ready2walk.Database.Sessions
 import com.example.cauliflower.ready2walk.Database.SessionsDatabase
-import com.example.cauliflower.ready2walk.UI.toast
-import java.time.LocalDateTime
-
 import com.example.cauliflower.ready2walk.R
 import kotlinx.android.synthetic.main.fragment_sampling.*
 import kotlinx.coroutines.CoroutineScope
@@ -41,13 +35,19 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
     private var sensorManager: SensorManager? = null
     var phoneAccelerometer: Sensor? = null
     var phoneStepSensor: Sensor? = null
-
+    var phoneGyroscope: Sensor? = null
 
     var accelerometerData: MutableList<Float> = mutableListOf()
     var autocorrelationData: MutableList<Float> = mutableListOf()
     var autocorrelationRawData: MutableList<Float> = mutableListOf()
+
+    var gyroscopeData: MutableList<Float> = mutableListOf()
     var sessionDate: String = String()
     var sessionSamplingPeriodUs: Int = 1000
+
+    //
+    var gravity: FloatArray = FloatArray(3)
+    var linear_acceleration: FloatArray = FloatArray(3)
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -69,6 +69,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         sensorManager = activity!!.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         phoneAccelerometer = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         phoneStepSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
+        phoneGyroscope = sensorManager!!.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         //sensorManager!!.unregisterListener(this)
 
         //functionality start button
@@ -77,6 +78,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             sensorManager!!.registerListener(this, phoneAccelerometer, 1000)
             sensorManager!!.registerListener(this, phoneStepSensor,
                     SensorManager.SENSOR_DELAY_FASTEST, SensorManager.SENSOR_STATUS_ACCURACY_HIGH)
+            sensorManager!!.registerListener(this, phoneGyroscope, sessionSamplingPeriodUs)
             activity!!.toast("Session Started") //send verification message
 
             if (sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
@@ -125,9 +127,10 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                             //Create session entry
                             var sessionAccelerometer = accelerometerData.toList()
                             var sessionAutocorrelation = autocorrelationData.toList()
+                            var sessionGyroscope = gyroscopeData.toList()
                             sessionDate = Calendar.getInstance().time.toString()
                             //push into database
-                            val session = Sessions(sessionDate, sessionAccelerometer, sessionAutocorrelation, sessionSamplingPeriodUs)
+                            val session = Sessions(sessionDate, sessionAccelerometer, sessionAutocorrelation, sessionSamplingPeriodUs, sessionGyroscope)
                             SessionsDatabase(it).getSessionsDao().addSession(session)
                             it.toast("Session Saved")
                         } else {
@@ -157,8 +160,14 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 //context?.toast("you have step sensor")
             }
 
+            if (event.sensor.type == Sensor.TYPE_GYROSCOPE) {
+                gyroscopeData.add(event.values[2])  // get value about z-axis (value[2]), to get left and right sway
+                System.out.println("Gyroscope: " + event.values[2])
+            }
+
         }
     }
+
 
     //saving without coroutines
     /*private fun saveSession(sessions: Sessions) {
