@@ -3,21 +3,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.cauliflower.ready2walk.UI.SessionView"
-    android:background="?attr/bgColor">
+    tools:context="com.example.cauliflower.ready2walk.UI.SessionView">
 
      <com.jjoe64.graphview.GraphView
          android:id="@+id/sessionGraph"
          android:layout_width="match_parent"
-         android:layout_height="300dp"
+         android:layout_height="200dp"
          android:layout_gravity="top"
          />
+
+     <com.jjoe64.graphview.GraphView
+         android:id="@+id/sessionGyroGraph"
+         android:layout_width="match_parent"
+         android:layout_height="200dp"
+         android:layout_marginTop="200dp"
+         />
+
      <com.jjoe64.graphview.GraphView
          android:id="@+id/sessionAutocorrGraph"
          android:layout_width="match_parent"
-         android:layout_height="300dp"
-         android:layout_gravity="bottom"
-         />
+         android:layout_height="200dp"
+         android:layout_marginTop="400dp"
+         android:layout_marginLeft="0dp"/>
 
      <!--DEBUG data>
      <TextView
