@@ -1,7 +1,6 @@
 package com.example.cauliflower.ready2walk.UI
 
 
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Sensor
@@ -36,6 +35,8 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
     var phoneAccelerometer: Sensor? = null
     var phoneStepSensor: Sensor? = null
     var phoneGyroscope: Sensor? = null
+    //Added Step Counter
+    var phoneStepCounter: Sensor? = null
 
     var accelerometerData: MutableList<Float> = mutableListOf()
     var autocorrelationData: MutableList<Float> = mutableListOf()
@@ -72,14 +73,28 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         phoneGyroscope = sensorManager!!.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         //sensorManager!!.unregisterListener(this)
 
+        //Step Counter to use if Step Detector doesn't register due to power issue
+        phoneStepCounter = sensorManager!!.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+
         //functionality start button
         startButton.setOnClickListener {
             //Register Sensors
             sensorManager!!.registerListener(this, phoneAccelerometer, 1000)
-            sensorManager!!.registerListener(this, phoneStepSensor,
+            var sensor = sensorManager!!.registerListener(this, phoneStepSensor,
                     SensorManager.SENSOR_DELAY_FASTEST, SensorManager.SENSOR_STATUS_ACCURACY_HIGH)
             sensorManager!!.registerListener(this, phoneGyroscope, sessionSamplingPeriodUs)
             activity!!.toast("Session Started") //send verification message
+
+            //System.out.println("Step Detector is: " + sensor)
+            val pm: PackageManager = context!!.getPackageManager()
+            if (pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER)) {
+                // the awesome stuff here
+                sensorManager!!.registerListener(this, phoneStepCounter, SensorManager.SENSOR_DELAY_UI)
+                System.out.println("You have a step counter")
+            }
+            else{
+                System.out.println("No step counter")
+            }
 
             if (sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
                 activity!!.toast("you have a step sensor") //send verification message
@@ -152,19 +167,26 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
                 accelerometerData.add(event.values[0]) // Extract acceleration in Medilateral direction
                 //System.out.println("step1")
-            }
-
-            if (event.sensor.type == Sensor.TYPE_STEP_DETECTOR) {
-                autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
-                //System.out.println("step2")
-                //context?.toast("you have step sensor")
+                return;
             }
 
             if (event.sensor.type == Sensor.TYPE_GYROSCOPE) {
                 gyroscopeData.add(event.values[2])  // get value about z-axis (value[2]), to get left and right sway
-                System.out.println("Gyroscope: " + event.values[2])
+                //System.out.println("Gyroscope: " + event.values[2])
+                return;
             }
 
+            if (event.sensor.type == Sensor.TYPE_STEP_DETECTOR) {
+                autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
+                System.out.println("step2")
+                //context?.toast("you have step sensor")
+            }
+
+            //System.out.println("Event is:" + event.sensor.type)
+            if(event.sensor.type == Sensor.TYPE_STEP_COUNTER){
+                autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
+                System.out.println("Step Counter Registered")
+            }
         }
     }
 
