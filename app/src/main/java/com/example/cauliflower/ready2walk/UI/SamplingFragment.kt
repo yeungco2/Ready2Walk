@@ -107,6 +107,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             else {
                 activity!!.toast("Step sensor not found") //send verification message
             }
+            System.out.println("Sampling Process Initiated")
 
         }
         //functionality stop button
@@ -123,21 +124,24 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                         val dataSize = autocorrelationRawData.toList().size
                         var meanRaw = (autocorrelationRawData.sum()) / dataSize
 
-                        // Perform autocorrelation
-                        for ((k, value) in autocorrelationRawData.withIndex()) {
-                            System.out.println("index: " + k + ", value: " + value)
-                            autocorrK = 0.0
-                            // obtain autocorrelation series
-                            for ((i, ivalue) in autocorrelationRawData.withIndex()) {
-                                autocorrK += ((ivalue - meanRaw) *
-                                        (autocorrelationRawData.toList().get((k + i) % (dataSize - 1)) - meanRaw))
+                        if (dataSize > 1) {
+                            // Perform autocorrelation
+                            for ((k, value) in autocorrelationRawData.withIndex()) {
+                                System.out.println("index: " + k + ", value: " + value + " Data Size: " + dataSize)
+                                autocorrK = 0.0
+                                // obtain autocorrelation series
+                                for ((i, ivalue) in autocorrelationRawData.withIndex()) {
+                                    autocorrK += ((ivalue - meanRaw) *
+                                            (autocorrelationRawData.toList().get((k + i) % (dataSize - 1)) - meanRaw))
+                                }
+                                if (k == 0) {
+                                    autocorr0 = autocorrK
+                                }
+                                System.out.println("Autocorr0: " + autocorr0)
+                                autocorrelationData.add((autocorrK / (autocorr0)).toFloat())
                             }
-                            if (k == 0) {
-                                autocorr0 = autocorrK
-                            }
-                            autocorrelationData.add((autocorrK / (autocorr0)).toFloat())
+                            it.toast("Autocorrelation Finished")
                         }
-                        it.toast("Autocorrelation Finished")
                         if (autocorrelationData.isEmpty() == false) {
                             //Create session entry
                             var sessionAccelerometer = accelerometerData.toList()
@@ -180,12 +184,14 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
                 System.out.println("step2")
                 //context?.toast("you have step sensor")
+                return;
             }
 
             //System.out.println("Event is:" + event.sensor.type)
             if(event.sensor.type == Sensor.TYPE_STEP_COUNTER){
                 autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
                 System.out.println("Step Counter Registered")
+                return;
             }
         }
     }
