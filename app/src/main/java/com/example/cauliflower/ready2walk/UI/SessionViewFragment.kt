@@ -32,6 +32,7 @@ class SessionView : BaseFragment()  {
     private lateinit var sessionGraphSeries:LineGraphSeries<DataPoint>
     private lateinit var sessionAutocorrSeries:LineGraphSeries<DataPoint>
     private lateinit var sessionGyroscopeSeries:LineGraphSeries<DataPoint>
+    private lateinit var sessionStepsSeries:LineGraphSeries<DataPoint>
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -63,17 +64,21 @@ class SessionView : BaseFragment()  {
         sessionGraphSeries = LineGraphSeries<DataPoint>()
         sessionAutocorrSeries = LineGraphSeries<DataPoint>()
         sessionGyroscopeSeries = LineGraphSeries<DataPoint>()
+        sessionStepsSeries = LineGraphSeries<DataPoint>()
 
+       // find size of data
         val dataSizeAccelerometer = session!!.accelerometerData.toList().size
         val dataSizeAutocorrelation = session!!.autocorrelationData.toList().size
         val dataSizeGyroscope = session!!.gyroscopeData.toList().size
+        val dataSizeStep = session!!.stepData.toList().size
 
         var timeX = 0.0
         var accY = 0.0
         var gyroY = 0.0
+        var stepY = 0.0
 
 
-        //save data
+        //Load Data
         for((index, value) in session!!.accelerometerData.toList().withIndex()){
             //System.out.println("index: " + index + ", value: " + value)
             timeX = index.toDouble()*session!!.samplePeriodUs/MICROSECONDSOVERSECONDS //to get time
@@ -82,6 +87,17 @@ class SessionView : BaseFragment()  {
             sessionGraphSeries.appendData(DataPoint(timeX, accY), true, dataSizeAccelerometer)
             //sessionAutocorrSeries.appendData(DataPoint(timeX , autocorrY/(dataSize - index)), true, dataSize)
         }
+
+        timeX = 0.0
+        for((index, value) in session!!.stepData.toList().withIndex()){
+            //System.out.println("index: " + index + ", value: " + value)
+            timeX = index.toDouble()*session!!.samplePeriodUs/MICROSECONDSOVERSECONDS //to get time
+            stepY = value.toDouble()
+            // Fill graph series
+            sessionStepsSeries.appendData(DataPoint(timeX, stepY), true, dataSizeStep)
+            //sessionAutocorrSeries.appendData(DataPoint(timeX , autocorrY/(dataSize - index)), true, dataSize)
+        }
+
         for((index, value) in session!!.autocorrelationData.toList().withIndex()) {
             // Fill graph series
             sessionAutocorrSeries.appendData(DataPoint(index.toDouble(), value.toDouble()), true, dataSizeAutocorrelation)
@@ -94,15 +110,23 @@ class SessionView : BaseFragment()  {
             gyroY = value.toDouble()
             sessionGyroscopeSeries.appendData(DataPoint(timeX, gyroY), true, dataSizeGyroscope)
         }
-        plotGraph(sessionGraph, sessionGraphSeries, "Real Time Graph")
-        plotGraph(sessionAutocorrGraph, sessionAutocorrSeries, "Auto Correlation Graph")
-        plotGraph(sessionGyroGraph, sessionGyroscopeSeries, "Gyroscope Graph")
+        plotGraph(sessionGraph, sessionGraphSeries, "Real Time Graph", Color.BLUE)
+        plotGraph(sessionAutocorrGraph, sessionAutocorrSeries, "Auto Correlation Graph", Color.BLUE)
+        plotGraph(sessionGyroGraph, sessionGyroscopeSeries, "Gyroscope Graph", Color.BLUE)
+        plotGraph(sessionGraph, sessionStepsSeries, "Steps Graph", Color.RED)
+
+        // Update averages
+        val angleAverageValue  = session!!.gyroscopeData.sum() / dataSizeGyroscope
+        angleAverage.setText("Angle Average: $angleAverageValue")
+        val autocorrelationAverageValue  = session!!.autocorrelationData.sum() / dataSizeAutocorrelation
+        autocorrelationAverage.setText("Autocorrelation Average: $autocorrelationAverageValue")
 
     }
 
     // Plot graph at graphID in XML, given LineGraphSeries and title
-    private fun plotGraph(graph:GraphView, series:LineGraphSeries<DataPoint>, title:String) {
+    private fun plotGraph(graph:GraphView, series:LineGraphSeries<DataPoint>, title:String, plotColor:Int) {
         series.title = title
+        series.color = plotColor
         graph.addSeries(series)
         graph.viewport.isScalable = true
         graph.viewport.isScalable = true
@@ -138,7 +162,7 @@ class SessionView : BaseFragment()  {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){// in node is not null delete
+        when(item.itemId){// if node is not null delete
             R.id.DeleteSession ->
                 if(session != null)
                     deleteSession()

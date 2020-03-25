@@ -1,30 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.cauliflower.ready2walk.UI.SessionView">
 
-     <com.jjoe64.graphview.GraphView
-         android:id="@+id/sessionGraph"
+     <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
-         android:layout_height="200dp"
-         android:layout_gravity="top"
-         />
+         android:layout_height="match_parent">
 
-     <com.jjoe64.graphview.GraphView
-         android:id="@+id/sessionGyroGraph"
-         android:layout_width="match_parent"
-         android:layout_height="200dp"
-         android:layout_marginTop="200dp"
-         />
+          <com.jjoe64.graphview.GraphView
+              android:id="@+id/sessionAutocorrGraph"
+              android:layout_width="400dp"
+              android:layout_height="180dp"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintHorizontal_bias="0.495"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toBottomOf="@+id/sessionGyroGraph"
+              app:layout_constraintVertical_bias="0.406" />
 
-     <com.jjoe64.graphview.GraphView
-         android:id="@+id/sessionAutocorrGraph"
-         android:layout_width="match_parent"
-         android:layout_height="200dp"
-         android:layout_marginTop="400dp"
-         android:layout_marginLeft="0dp"/>
+          <com.jjoe64.graphview.GraphView
+              android:id="@+id/sessionGyroGraph"
+              android:layout_width="400dp"
+              android:layout_height="180dp"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintHorizontal_bias="0.495"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent"
+              app:layout_constraintVertical_bias="0.401" />
+
+          <com.jjoe64.graphview.GraphView
+              android:id="@+id/sessionGraph"
+              android:layout_width="400dp"
+              android:layout_height="180dp"
+              android:layout_gravity="top"
+              app:layout_constraintBottom_toTopOf="@+id/sessionGyroGraph"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintHorizontal_bias="0.0"
+              app:layout_constraintStart_toStartOf="@+id/sessionGyroGraph"
+              app:layout_constraintTop_toTopOf="parent"
+              app:layout_constraintVertical_bias="0.39" />
+
+          <TextView
+              android:id="@+id/angleAverage"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Average Angle: "
+              app:layout_constraintBottom_toTopOf="@+id/sessionAutocorrGraph"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toBottomOf="@+id/sessionGyroGraph" />
+
+          <TextView
+              android:id="@+id/autocorrelationAverage"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Average Autocorrelation: "
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toBottomOf="@+id/sessionAutocorrGraph" />
+     </androidx.constraintlayout.widget.ConstraintLayout>
 
      <!--DEBUG data>
      <TextView

@@ -14,9 +14,9 @@
         android:text="" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id = "@+id/recycler_view_files"
+        android:id="@+id/recycler_view_files"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textColor="?attr/textColor"/>
+        android:textColor="?attr/textColor" />
 
 </FrameLayout>

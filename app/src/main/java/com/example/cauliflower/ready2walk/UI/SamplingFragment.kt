@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import com.example.cauliflower.ready2walk.Database.Sessions
 import com.example.cauliflower.ready2walk.Database.SessionsDatabase
 import com.example.cauliflower.ready2walk.R
@@ -35,12 +36,14 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
     var phoneAccelerometer: Sensor? = null
     var phoneStepSensor: Sensor? = null
     var phoneGyroscope: Sensor? = null
+
     //Added Step Counter
     var phoneStepCounter: Sensor? = null
 
     var accelerometerData: MutableList<Float> = mutableListOf()
     var autocorrelationData: MutableList<Float> = mutableListOf()
     var autocorrelationRawData: MutableList<Float> = mutableListOf()
+    var stepData: MutableList<Float> = mutableListOf()
 
     var gyroscopeData: MutableList<Float> = mutableListOf()
     var sessionDate: String = String()
@@ -81,7 +84,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             //Register Sensors
             sensorManager!!.registerListener(this, phoneAccelerometer, 1000)
             var sensor = sensorManager!!.registerListener(this, phoneStepSensor,
-                    SensorManager.SENSOR_DELAY_FASTEST, SensorManager.SENSOR_STATUS_ACCURACY_HIGH)
+                    0,0)
             sensorManager!!.registerListener(this, phoneGyroscope, sessionSamplingPeriodUs)
             activity!!.toast("Session Started") //send verification message
 
@@ -91,8 +94,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 // the awesome stuff here
                 sensorManager!!.registerListener(this, phoneStepCounter, SensorManager.SENSOR_DELAY_UI)
                 System.out.println("You have a step counter")
-            }
-            else{
+            } else {
                 System.out.println("No step counter")
             }
 
@@ -103,8 +105,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             // check if step sensor is available
             if (sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
                 activity!!.toast("you have a step sensor") //send verification message
-            }
-            else {
+            } else {
                 activity!!.toast("Step sensor not found") //send verification message
             }
             System.out.println("Sampling Process Initiated")
@@ -132,24 +133,25 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                                 // obtain autocorrelation series
                                 for ((i, ivalue) in autocorrelationRawData.withIndex()) {
                                     autocorrK += ((ivalue - meanRaw) *
-                                            (autocorrelationRawData.toList().get((k + i) % (dataSize - 1)) - meanRaw))
+                                            (autocorrelationRawData.toList().get((k + i) % (dataSize - k)) - meanRaw))
                                 }
-                                if (k == 0) {
-                                    autocorr0 = autocorrK
-                                }
-                                System.out.println("Autocorr0: " + autocorr0)
+                                autocorr0 += (autocorrK - autocorr0)/(k+1)
+                                System.out.println("Autocorr0: " + autocorr0 + autocorrK)
                                 autocorrelationData.add((autocorrK / (autocorr0)).toFloat())
                             }
                             it.toast("Autocorrelation Finished")
                         }
+                        // Save session
                         if (autocorrelationData.isEmpty() == false) {
                             //Create session entry
                             var sessionAccelerometer = accelerometerData.toList()
                             var sessionAutocorrelation = autocorrelationData.toList()
                             var sessionGyroscope = gyroscopeData.toList()
+                            var sessionSteps = stepData.toList()
                             sessionDate = Calendar.getInstance().time.toString()
                             //push into database
-                            val session = Sessions(sessionDate, sessionAccelerometer, sessionAutocorrelation, sessionSamplingPeriodUs, sessionGyroscope)
+                            val session = Sessions(sessionDate, sessionAccelerometer, sessionAutocorrelation,
+                                    sessionSamplingPeriodUs, sessionGyroscope,sessionSteps )
                             SessionsDatabase(it).getSessionsDao().addSession(session)
                             it.toast("Session Saved")
                         } else {
@@ -160,7 +162,11 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                     }
                 }
             }
+            // Go back to home after sampling is done
+            val action = SamplingFragmentDirections.actionSaveSampling()
+            Navigation.findNavController(it).navigate(action)
         }
+
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -170,6 +176,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         if (event != null) {
             if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
                 accelerometerData.add(event.values[0]) // Extract acceleration in Medilateral direction
+                stepData.add((0).toFloat())
                 //System.out.println("step1")
                 return;
             }
@@ -182,17 +189,18 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
 
             if (event.sensor.type == Sensor.TYPE_STEP_DETECTOR) {
                 autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
-                System.out.println("step2")
+                stepData[stepData.lastIndex] = (10).toFloat()
+                //System.out.println("step2")
                 //context?.toast("you have step sensor")
                 return;
             }
 
-            //System.out.println("Event is:" + event.sensor.type)
-            if(event.sensor.type == Sensor.TYPE_STEP_COUNTER){
+            /*//System.out.println("Event is:" + event.sensor.type)
+            if (event.sensor.type == Sensor.TYPE_STEP_COUNTER) {
                 autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
                 System.out.println("Step Counter Registered")
                 return;
-            }
+            }*/
         }
     }
 
