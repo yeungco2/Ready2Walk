@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.cauliflower.ready2walk.UI.HomeFragment"
     android:background="?attr/bgColor">
 
@@ -12,21 +12,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="#4CAF50"
+        app:fabCustomSize="90dp"
+        app:maxImageSize="50dp"
         android:clickable="true"
+        android:focusable="true"
         android:src="@drawable/ic_person_black_24dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"/>
+        android:layout_toStartOf="@id/appInfoButton"
+        android:layout_alignParentEnd="true"/>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/trainingButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="300dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
         android:backgroundTint="#00BCD4"
+        app:fabCustomSize="90dp"
+        app:maxImageSize="50dp"
         android:clickable="true"
+        android:focusable="true"
         android:src="@drawable/ic_fitness_center_black_24dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -37,7 +43,10 @@
         android:layout_centerInParent="true"
         android:layout_marginBottom="0dp"
         android:backgroundTint="#FFE204"
+        app:fabCustomSize="90dp"
+        app:maxImageSize="50dp"
         android:clickable="true"
+        android:focusable="true"
         android:src="@drawable/ic_accessibility_black_24dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -45,9 +54,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="#F44336"
+        app:fabCustomSize="90dp"
+        app:maxImageSize="50dp"
         android:clickable="true"
+        android:focusable="true"
         android:src="@drawable/ic_folder_black_24dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"/>
-
+        android:layout_alignParentStart="true"/>
 </RelativeLayout>
