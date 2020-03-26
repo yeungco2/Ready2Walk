@@ -44,6 +44,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
     var autocorrelationData: MutableList<Float> = mutableListOf()
     var autocorrelationRawData: MutableList<Float> = mutableListOf()
     var stepData: MutableList<Float> = mutableListOf()
+    var peaksData: MutableList<Float> = mutableListOf()
 
     var gyroscopeData: MutableList<Float> = mutableListOf()
     var sessionDate: String = String()
@@ -183,6 +184,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
 
             if (event.sensor.type == Sensor.TYPE_GYROSCOPE) {
                 gyroscopeData.add(event.values[2])  // get value about z-axis (value[2]), to get left and right sway
+
                 //System.out.println("Gyroscope: " + event.values[2])
                 return;
             }
@@ -204,6 +206,24 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         }
     }
 
+    private fun findPeaks(accData:MutableList<Float>){
+        var peakData: MutableList<Float> = mutableListOf()
+        val indexRange = 500
+        val indexDivision = accData.size
+        var tempBig: Float = 0.0F
+        val highFlag = false
+        val lowFlag = false
+        //var templow = 0
+        for ((i, value) in peakData.withIndex()) {
+            while (!highFlag){
+                if (value > tempBig) {
+                    tempBig = value
+                }
+            }
+        }
+
+
+    }
 
     //saving without coroutines
     /*private fun saveSession(sessions: Sessions) {
