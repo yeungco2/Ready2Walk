@@ -110,10 +110,10 @@ class SessionView : BaseFragment()  {
             gyroY = value.toDouble()
             sessionGyroscopeSeries.appendData(DataPoint(timeX, gyroY), true, dataSizeGyroscope)
         }
-        plotGraph(sessionGraph, sessionGraphSeries, "Real Time Graph", Color.BLUE)
-        plotGraph(sessionAutocorrGraph, sessionAutocorrSeries, "Auto Correlation Graph", Color.BLUE)
-        plotGraph(sessionGyroGraph, sessionGyroscopeSeries, "Gyroscope Graph", Color.BLUE)
-        plotGraph(sessionGraph, sessionStepsSeries, "Steps Graph", Color.RED)
+        plotGraph(sessionGraph, sessionGraphSeries, "Real Time Graph", "Time(ms)", "Trunk Sway acceleration(m/s^2)", Color.BLUE)
+        plotGraph(sessionAutocorrGraph, sessionAutocorrSeries, "Auto Correlation Graph", "Step Lag (number of steps)", "Autocorrelation Coefficient", Color.BLUE)
+        plotGraph(sessionGyroGraph, sessionGyroscopeSeries, "Gyroscope Graph", "Time(ms)", "Trunk Angle(degrees)", Color.BLUE)
+        plotGraph(sessionGraph, sessionStepsSeries, "Steps Graph", "Time(ms)", "Trunk Sway acceleration(m/s^2)", Color.RED)
 
         // Update averages
         val angleAverageValue  = session!!.gyroscopeData.sum() / dataSizeGyroscope
@@ -124,15 +124,15 @@ class SessionView : BaseFragment()  {
     }
 
     // Plot graph at graphID in XML, given LineGraphSeries and title
-    private fun plotGraph(graph:GraphView, series:LineGraphSeries<DataPoint>, title:String, plotColor:Int) {
+    private fun plotGraph(graph:GraphView, series:LineGraphSeries<DataPoint>, title:String, horizontalTitle:String, verticalTitle:String, plotColor:Int) {
         series.title = title
         series.color = plotColor
         graph.addSeries(series)
         graph.viewport.isScalable = true
-        graph.viewport.isScalable = true
         graph.viewport.setScalableY(true)
         graph.viewport.borderColor = Color.RED
         graph.legendRenderer.textColor = Color.CYAN
+        graph.setPadding(0,0,0,0)
 
         graph.legendRenderer.apply {
             isVisible = true
@@ -140,8 +140,11 @@ class SessionView : BaseFragment()  {
         }
         graph.gridLabelRenderer.apply {
             gridColor = Color.RED //R.attr.textColor
-            verticalLabelsColor = Color.RED //R.attr.textColor
-            horizontalLabelsColor = Color.RED
+            verticalLabelsColor = Color.BLACK //R.attr.textColor
+            horizontalLabelsColor = Color.BLACK
+            horizontalAxisTitle = horizontalTitle
+            verticalAxisTitle = verticalTitle
+            labelVerticalWidth = (verticalAxisTitleWidth+20)
         }
     }
 
