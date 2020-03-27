@@ -1,9 +1,14 @@
 package com.example.cauliflower.ready2walk.UI
 
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.cauliflower.ready2walk.Database.Sessions
@@ -17,6 +22,7 @@ import kotlinx.android.synthetic.main.fragment_session_view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 
 /**
  * A simple [Fragment] subclass.
@@ -55,6 +61,36 @@ class SessionView : BaseFragment()  {
             //sessionDataList.text = session?.accelerometerData.toString()
             //graph the session data
             graphSession()
+        }
+
+        sendEmail.setOnClickListener {
+            Log.i("Send email", "")
+            val TO = arrayOf("")
+            val CC = arrayOf("")
+            val emailIntent = Intent(Intent.ACTION_SEND)
+
+            emailIntent.data = Uri.parse("mailto:")
+            emailIntent.type = "text/plain"
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, TO)
+            emailIntent.putExtra(Intent.EXTRA_CC, CC)
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Session Data")
+            val accelerationData = session!!.accelerometerData.toList().toString()
+            val autocorrelationData = session!!.autocorrelationData.toList().toString()
+            val gyroscopeData = session!!.gyroscopeData.toList().toString()
+            val peaksData = session!!.peaksData.toList().toString()
+            //Add extra data when extra data gets added to the session storage
+
+            val message = "Acceleration Data:\n$accelerationData\nAutocorrelation Data:\n$autocorrelationData\n" +
+                    "Gyroscope Data:\n$gyroscopeData\nPeaks Data:\n$peaksData"
+            emailIntent.putExtra(Intent.EXTRA_TEXT, message)
+
+            try {
+                startActivity(Intent.createChooser(emailIntent, "Send mail..."))
+                //finish()
+                System.out.println("Finished sending email")
+            } catch (ex: ActivityNotFoundException) {
+                System.out.println("Error. No email sent")
+            }
         }
 
     }
@@ -173,4 +209,6 @@ class SessionView : BaseFragment()  {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu, menu)
     }
+
+
 }
