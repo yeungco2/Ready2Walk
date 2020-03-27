@@ -11,7 +11,9 @@ data class Sessions (
     var autocorrelationData: List<Float>,
     val samplePeriodUs: Int,
     var gyroscopeData: List<Float>,
-    var stepData: List<Float>
+    var stepData: List<Float>,
+    var peaksData: List<Float>
+
 
 
     //val time: Vector<Int>

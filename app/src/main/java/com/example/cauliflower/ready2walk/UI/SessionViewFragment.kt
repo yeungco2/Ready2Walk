@@ -70,7 +70,7 @@ class SessionView : BaseFragment()  {
         val dataSizeAccelerometer = session!!.accelerometerData.toList().size
         val dataSizeAutocorrelation = session!!.autocorrelationData.toList().size
         val dataSizeGyroscope = session!!.gyroscopeData.toList().size
-        val dataSizeStep = session!!.stepData.toList().size
+        val dataSizeStep = session!!.peaksData.toList().size
 
         var timeX = 0.0
         var accY = 0.0
@@ -89,7 +89,7 @@ class SessionView : BaseFragment()  {
         }
 
         timeX = 0.0
-        for((index, value) in session!!.stepData.toList().withIndex()){
+        for((index, value) in session!!.peaksData.toList().withIndex()){
             //System.out.println("index: " + index + ", value: " + value)
             timeX = index.toDouble()*session!!.samplePeriodUs/MICROSECONDSOVERSECONDS //to get time
             stepY = value.toDouble()

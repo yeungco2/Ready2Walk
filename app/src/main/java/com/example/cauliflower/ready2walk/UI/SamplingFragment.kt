@@ -85,7 +85,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             //Register Sensors
             sensorManager!!.registerListener(this, phoneAccelerometer, 1000)
             var sensor = sensorManager!!.registerListener(this, phoneStepSensor,
-                    0,0)
+                    0, 0)
             sensorManager!!.registerListener(this, phoneGyroscope, sessionSamplingPeriodUs)
             activity!!.toast("Session Started") //send verification message
 
@@ -119,12 +119,20 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
 
             //Create coroutine for auto correlation and saving session
             CoroutineScope(Dispatchers.Main + job1).launch {
-                context?.let {
-                    if ((accelerometerData.isEmpty() == false) || (accelerometerData.isEmpty() == false)) {
+                context?.let { it ->
+                    if (accelerometerData.isEmpty() == false) {
+
+                        peaksData = findPeaks(accelerometerData)
+
+                        autocorrelationRawData = peaksData.filter { it != 0.0F }.toMutableList()
+
                         var autocorrK = 0.0
                         var autocorr0 = 0.0
                         val dataSize = autocorrelationRawData.toList().size
                         var meanRaw = (autocorrelationRawData.sum()) / dataSize
+
+
+                        System.out.println("total" + autocorrelationRawData.size)
 
                         if (dataSize > 1) {
                             // Perform autocorrelation
@@ -136,23 +144,25 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                                     autocorrK += ((ivalue - meanRaw) *
                                             (autocorrelationRawData.toList().get((k + i) % (dataSize - k)) - meanRaw))
                                 }
-                                autocorr0 += (autocorrK - autocorr0)/(k+1)
+                                if (autocorrK > 0 ){
+                                autocorr0 += (autocorrK - autocorr0) / (k + 1)}
                                 System.out.println("Autocorr0: " + autocorr0 + autocorrK)
                                 autocorrelationData.add((autocorrK / (autocorr0)).toFloat())
                             }
                             it.toast("Autocorrelation Finished")
                         }
                         // Save session
-                        if (autocorrelationData.isEmpty() == false) {
+                        if (autocorrelationData.isEmpty() == false && peaksData.isEmpty() == false) {
                             //Create session entry
                             var sessionAccelerometer = accelerometerData.toList()
                             var sessionAutocorrelation = autocorrelationData.toList()
                             var sessionGyroscope = gyroscopeData.toList()
                             var sessionSteps = stepData.toList()
+                            var sessionPeaks = peaksData.toList()
                             sessionDate = Calendar.getInstance().time.toString()
                             //push into database
                             val session = Sessions(sessionDate, sessionAccelerometer, sessionAutocorrelation,
-                                    sessionSamplingPeriodUs, sessionGyroscope,sessionSteps )
+                                    sessionSamplingPeriodUs, sessionGyroscope, sessionSteps, sessionPeaks)
                             SessionsDatabase(it).getSessionsDao().addSession(session)
                             it.toast("Session Saved")
                         } else {
@@ -190,7 +200,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             }
 
             if (event.sensor.type == Sensor.TYPE_STEP_DETECTOR) {
-                autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
+                //autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
                 stepData[stepData.lastIndex] = (10).toFloat()
                 //System.out.println("step2")
                 //context?.toast("you have step sensor")
@@ -206,24 +216,62 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         }
     }
 
-    private fun findPeaks(accData:MutableList<Float>){
+    private fun findPeaks(accData: MutableList<Float>): MutableList<Float> {
         var peakData: MutableList<Float> = mutableListOf()
-        val indexRange = 500
-        val indexDivision = accData.size
-        var tempBig: Float = 0.0F
-        val highFlag = false
-        val lowFlag = false
-        //var templow = 0
-        for ((i, value) in peakData.withIndex()) {
-            while (!highFlag){
-                if (value > tempBig) {
-                    tempBig = value
-                }
+        val windowSize = 250
+        var indexWindow = 0
+        var tempPeak = accData[0]
+        var tempIndex = 0
+        var highFlag = true
+        var lowFlag = false
+        var restartWindow = true
+
+
+        for ((i, value) in accData.withIndex()) {
+            if (i == 0)
+            System.out.println("hello")
+            // look for highest peak
+            if ((value > tempPeak) && highFlag && value > 0) {
+                tempPeak = value
+                tempIndex = i
+                restartWindow = true
+                //System.out.println("up"+i)
             }
+
+            // look for lowest peak
+            else if ((value < tempPeak) && lowFlag && value < 0) {
+                tempPeak = value
+                tempIndex = i
+                restartWindow = true
+            }
+            else
+                restartWindow = false
+            //restart window
+            if (restartWindow) {
+                indexWindow = 0
+                //System.out.println(indexWindow)
+            } else // start window
+                indexWindow++
+                //System.out.println(indexWindow)
+            //save found peak high and change to low
+            if (!restartWindow && indexWindow == windowSize && highFlag) {
+                peakData.add(tempIndex,tempPeak)
+                System.out.println("up" + value + "index" + tempIndex)
+                highFlag = false
+                lowFlag = true
+            }
+            //save found peak low and change to high
+            else if (!restartWindow && indexWindow == windowSize && lowFlag) {
+                peakData.add(tempIndex,tempPeak)
+                System.out.println("low" + value + "index" + tempIndex)
+                highFlag = true
+                lowFlag = false
+            } else
+                peakData.add(0.0F)
         }
-
-
+        return peakData
     }
+
 
     //saving without coroutines
     /*private fun saveSession(sessions: Sessions) {
