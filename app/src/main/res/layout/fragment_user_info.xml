@@ -22,10 +22,11 @@
 
     <TextView
         android:id="@+id/UserInfo1"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="3dp"
         android:textColor="?attr/textColor"
+        android:textSize="24dp"
         android:text="@string/user_info1" />
     <EditText
         android:id="@+id/UserName"
@@ -54,10 +55,11 @@
 
         <TextView
             android:id="@+id/UserInfo2"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="3dp"
             android:textColor="?attr/textColor"
+            android:textSize="24dp"
             android:text="@string/user_info2" />
         <EditText
             android:id="@+id/UserHeight"
@@ -85,10 +87,11 @@
 
         <TextView
             android:id="@+id/UserInfo3"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="3dp"
             android:textColor="?attr/textColor"
+            android:textSize="24dp"
             android:text="@string/user_info3" />
         <EditText
             android:id="@+id/UserWeight"
@@ -118,10 +121,11 @@
 
         <TextView
             android:id="@+id/UserInfo4"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="3dp"
             android:textColor="?attr/textColor"
+            android:textSize="24dp"
             android:text="@string/user_info4" />
         <EditText
             android:id="@+id/UserAge"
@@ -151,10 +155,11 @@
 
         <TextView
             android:id="@+id/UserInfo5"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="3dp"
             android:textColor="?attr/textColor"
+            android:textSize="24dp"
             android:text="@string/user_info5" />
         <EditText
             android:id="@+id/UserGender"
