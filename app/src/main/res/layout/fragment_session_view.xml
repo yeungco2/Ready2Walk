@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.cauliflower.ready2walk.UI.SessionView">
+    tools:context="com.example.cauliflower.ready2walk.UI.SessionView"
+    android:background="?attr/bgColor">
 
      <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
@@ -52,17 +53,20 @@
               app:layout_constraintBottom_toTopOf="@+id/sessionAutocorrGraph"
               app:layout_constraintEnd_toEndOf="parent"
               app:layout_constraintStart_toStartOf="parent"
+              android:textColor="?attr/textColor"
               app:layout_constraintTop_toBottomOf="@+id/sessionGyroGraph" />
 
           <TextView
               android:id="@+id/autocorrelationAverage"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
+              android:textColor="?attr/textColor"
               android:text="Average Autocorrelation: "
               app:layout_constraintBottom_toBottomOf="parent"
               app:layout_constraintEnd_toEndOf="parent"
               app:layout_constraintStart_toStartOf="parent"
-              app:layout_constraintTop_toBottomOf="@+id/sessionAutocorrGraph" />
+              app:layout_constraintTop_toBottomOf="@+id/sessionAutocorrGraph"
+              app:layout_constraintBottom_toTopOf="@+id/sendEmail"/>
 
           <Button
               android:id="@+id/sendEmail"

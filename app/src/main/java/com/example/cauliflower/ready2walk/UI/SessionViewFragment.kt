@@ -176,8 +176,10 @@ class SessionView : BaseFragment()  {
         }
         graph.gridLabelRenderer.apply {
             gridColor = Color.RED //R.attr.textColor
-            verticalLabelsColor = Color.BLACK //R.attr.textColor
-            horizontalLabelsColor = Color.BLACK
+            verticalLabelsColor = Color.BLUE //R.attr.textColor
+            horizontalLabelsColor = Color.BLUE
+            horizontalAxisTitleColor = Color.BLUE
+            verticalAxisTitleColor = Color.BLUE
             horizontalAxisTitle = horizontalTitle
             verticalAxisTitle = verticalTitle
             labelVerticalWidth = (verticalAxisTitleWidth+20)
