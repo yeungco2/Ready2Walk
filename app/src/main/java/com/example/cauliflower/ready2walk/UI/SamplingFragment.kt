@@ -37,6 +37,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
     var phoneAccelerometer: Sensor? = null
     var phoneStepSensor: Sensor? = null
     var magenticSensor: Sensor? = null
+    var gameRotationSensor: Sensor? = null
 
     //Added Step Counter
     var phoneStepCounter: Sensor? = null
@@ -59,6 +60,9 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
     // for X, Y, and Z.
     private var mAccelerometerData = FloatArray(3)
     private var mMagnetometerData = FloatArray(3)
+    private var mRotationData = FloatArray(3)
+    private var mEulerAngles = FloatArray(3)
+    private var rotationMatrix = FloatArray(9)
 
     // System display. Need this for determining rotation.
     private var mDisplay: Display? = null
@@ -84,6 +88,8 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         phoneAccelerometer = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         phoneStepSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
         magenticSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+        gameRotationSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR)
+
         //sensorManager!!.unregisterListener(this)
 
         //Step Counter to use if Step Detector doesn't register due to power issue
@@ -95,9 +101,9 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             activity!!.toast("Session Started") //send verification message
 
             //Register Sensors
-            sensorManager!!.registerListener(this, phoneAccelerometer, 1000)
-            var sensor = sensorManager!!.registerListener(this, phoneStepSensor,
-                    0, 0)
+            sensorManager!!.registerListener(this, phoneAccelerometer, sessionSamplingPeriodUs)
+            sensorManager!!.registerListener(this, phoneStepSensor, sessionSamplingPeriodUs, 0)
+            sensorManager!!.registerListener(this, gameRotationSensor, sessionSamplingPeriodUs, 0)
             sensorManager!!.registerListener(this, magenticSensor, sessionSamplingPeriodUs)
 
 
@@ -116,7 +122,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             }
 
             // check if step sensor is available
-            if (sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
+            if (sensorManager!!.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR) != null) {
                 activity!!.toast("you have a step sensor") //send verification message
             } else {
                 activity!!.toast("Step sensor not found") //send verification message
@@ -139,14 +145,15 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 context?.let { it ->
                     if (accelerometerData.isEmpty() == false) {
 
-                        var filteredAcc = movingAverage(entries = accelerometerData, window = 100,
+                        var filteredAcc = movingAverage(entries = accelerometerData, window = 300,
                                 averageCalc = { mean() }).toMutableList()
                         var filteredRot = movingAverage(entries = rotationData, window = 100,
                                 averageCalc = { mean() }).toMutableList()
 
                         peaksData = findPeaks(filteredAcc)
 
-                        autocorrelationRawData = peaksData.drop(10).filter { it != 0.0F }.toMutableList()
+                        // Drop a few peaks that may be initial noise or initial steps
+                        autocorrelationRawData = ((peaksData.filter { it != 0.0F }).drop(5)).toMutableList()
 
                         var autocorrK = 0.0
                         var autocorr0 = 0.0
@@ -154,7 +161,20 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                         var meanRaw = (autocorrelationRawData.sum()) / dataSize
 
 
-                        System.out.println("total" + autocorrelationRawData.size)
+                        /*// substract mean
+                        for ((m, mvalue) in autocorrelationRawData.withIndex()) {
+                            autocorrelationRawData[m] = mvalue - meanRaw
+                        }
+                        // normalize
+                        val highestPeak = autocorrelationRawData.max()
+                        val lowestPeak = autocorrelationRawData.min()
+                        val normalizatonFactor = maxOf(highestPeak!!.absoluteValue, lowestPeak!!.absoluteValue)
+                        for ((n, nvalue) in autocorrelationRawData.withIndex()) {
+                            autocorrelationRawData[n] = nvalue / normalizatonFactor
+                        }*/
+
+
+                        //System.out.println("total" + autocorrelationRawData.size)
 
                         if (dataSize > 1) {
                             // Perform autocorrelation
@@ -163,18 +183,31 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                                 autocorrK = 0.0
                                 // obtain autocorrelation series
                                 for ((i, ivalue) in autocorrelationRawData.withIndex()) {
-                                    autocorrK += ((ivalue - meanRaw) *
-                                            (autocorrelationRawData.toList().get((k + i) % (dataSize - k)) - meanRaw))
+                                    if (i<(dataSize - k)) {
+                                        autocorrK += (ivalue.absoluteValue) *
+                                                (autocorrelationRawData.toList().get((k + i))).absoluteValue
+                                        System.out.println(autocorrK)
+                                    }
+                                }
+                                autocorrK /= (dataSize - k)
+                                if (k == 0) {
+                                    autocorr0 = autocorrK
                                 }
 
-                                autocorr0 += (autocorrK.absoluteValue - autocorr0.absoluteValue) / (k + 1)
-                                System.out.println("Autocorr0: " + autocorr0 + autocorrK)
+                                //autocorr0 += (autocorrK.absoluteValue - autocorr0.absoluteValue) / (k + 1)
+                                //System.out.println("Autocorr0: " + autocorr0 + autocorrK)
                                 autocorrelationData.add((autocorrK / (autocorr0)).toFloat())
+                                //autocorrelationData.add((autocorrK).toFloat())
                             }
+
                             it.toast("Autocorrelation Finished")
                         }
                         // Save session
                         if (autocorrelationData.isEmpty() == false && peaksData.isEmpty() == false) {
+
+                            // Ensure steps vector is not empty in case phones dont detect steps
+                            stepData.add(0f)
+
                             //Create session entry
                             var sessionAccelerometer = filteredAcc.toList()
                             var sessionAutocorrelation = autocorrelationData.toList()
@@ -185,6 +218,10 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                             //push into database
                             val session = Sessions(sessionDate, sessionAccelerometer, sessionAutocorrelation,
                                     sessionSamplingPeriodUs, sessionGyroscope, sessionSteps, sessionPeaks)
+                            /*
+                            System.out.println("fuck" + sessionAccelerometer.size + "fuck" + sessionAutocorrelation.size
+                                    + "fuck" + sessionGyroscope.size + "fuck" + sessionSteps.size + "fuck" + sessionPeaks.size)
+                            */
                             SessionsDatabase(it).getSessionsDao().addSession(session)
                             it.toast("Session Saved")
                         } else {
@@ -232,17 +269,27 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             // clone() gets a copy so the data doesn't change out from under us
             when (event.sensor.type) {
                 Sensor.TYPE_ACCELEROMETER -> {
-                    accelerometerData.add(event.values[0]) // Extract acceleration in Medilateral direction (phone z axis)
+                    accelerometerData.add(event.values[0] * 10) // Extract acceleration in Medilateral direction (phone z axis)
                     stepData.add((0).toFloat())
                     mAccelerometerData = event.values.clone();
                     //System.out.println("step1")
                 }
-                Sensor.TYPE_MAGNETIC_FIELD -> {
-                    //rotationData.add(event.values[2])  // get value about z-axis (value[2]), to get left and right sway
+                /*Sensor.TYPE_MAGNETIC_FIELD -> {
                     mMagnetometerData = event.values.clone()
+                }*/
 
-                    //System.out.println("Gyroscope: " + event.values[2])
+
+                Sensor.TYPE_GAME_ROTATION_VECTOR -> {
+
+                    SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values.clone())
+                    SensorManager.getOrientation(rotationMatrix, mEulerAngles)
+                    rotationData.add(mEulerAngles[0] * 57.2957795f) // get value of azimuth angle, to get left and right sway
+                    //mMagnetometerData = event.values.clone()
+
+
+                    //System.out.println("is emtoy fuck" + rotationData.lastIndex)
                 }
+
                 Sensor.TYPE_STEP_DETECTOR -> {
                     //autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
                     stepData[stepData.lastIndex] = (10).toFloat()
@@ -250,7 +297,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 else -> return
             }
 
-            if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            /*if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
                 // Compute the rotation matrix: merges and translates the data
                 // from the accelerometer and magnetometer, in the device coordinate
                 // system, into a matrix in the world's coordinate system.
@@ -268,7 +315,6 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 val rotationOK = SensorManager.getRotationMatrix(rotationMatrix,
                         null, mAccelerometerData, mMagnetometerData)
 
-                // Remap the matrix based on current device/activity rotation.
 
                 // Remap the matrix based on current device/activity rotation.
                 var rotationMatrixAdjusted = FloatArray(9)
@@ -298,15 +344,15 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                     val roll = orientationValues[2]*/
                 }
                 rotationData.add(orientationValues[0] * 57.2957795f)
-            }
+            }*/
         }
     }
 
     private fun findPeaks(accData: MutableList<Float>): MutableList<Float> {
         var peakData: MutableList<Float> = mutableListOf()
-        val windowSize = 250
+        val windowSize = 400
         var indexWindow = 0
-        var tempPeak = accData[0]
+        var tempPeak = 0f
         var tempIndex = 0
         var highFlag = true
         var lowFlag = false
@@ -317,7 +363,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             if (i == 0)
                 System.out.println("hello")
             // look for highest peak
-            if ((value > tempPeak) && highFlag && value > 0) {
+            if ((value > tempPeak) && highFlag) {
                 tempPeak = value
                 tempIndex = i
                 restartWindow = true
@@ -325,11 +371,12 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             }
 
             // look for lowest peak
-            else if ((value < tempPeak) && lowFlag && value < 0) {
+            else if ((value < tempPeak) && lowFlag) {
                 tempPeak = value
                 tempIndex = i
                 restartWindow = true
-            } else
+            }
+            else
                 restartWindow = false
             //restart window
             if (restartWindow) {
@@ -344,15 +391,19 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 System.out.println("up" + value + "index" + tempIndex)
                 highFlag = false
                 lowFlag = true
+                //tempPeak = 0f
             }
+
             //save found peak low and change to high
             else if (!restartWindow && indexWindow == windowSize && lowFlag) {
                 peakData.add(tempIndex, tempPeak)
                 System.out.println("low" + value + "index" + tempIndex)
                 highFlag = true
                 lowFlag = false
-            } else
+            }
+            else {
                 peakData.add(0.0F)
+            }
         }
         return peakData
     }
@@ -361,7 +412,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         var smoothData: MutableList<Float> = mutableListOf()
 
         // Moving Average Algorithm
-        for ((i, value) in rawData.withIndex()){
+        for ((i, value) in rawData.withIndex()) {
 
 
         }
@@ -369,6 +420,8 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         return smoothData
     }
 
+
+    // Moving average filter
     fun <T> List<T>.slidingWindow(size: Int): List<List<T>> {
         if (size < 1) {
             throw IllegalArgumentException("Size must be > 0, but is $size.")

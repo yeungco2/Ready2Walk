@@ -141,6 +141,7 @@ class SessionView : BaseFragment()  {
         // Plot lines
         //save
         timeX = 0.0
+        val syncTime = (session!!.accelerometerData.size/session!!.gyroscopeData.size)*2
         for((index, value) in session!!.gyroscopeData.toList().withIndex()) {
             timeX = index.toDouble()*session!!.samplePeriodUs/MICROSECONDSOVERSECONDS //to get time
             gyroY = value.toDouble()
@@ -154,9 +155,15 @@ class SessionView : BaseFragment()  {
         // Update averages
         val angleAverageValue  = session!!.gyroscopeData.sum() / dataSizeGyroscope
         angleAverage.setText("Angle Average: $angleAverageValue")
-        val autocorrelationAverageValue  = session!!.autocorrelationData.sum() / dataSizeAutocorrelation
-        autocorrelationAverage.setText("Autocorrelation Average: $autocorrelationAverageValue")
 
+        // Find symmetry indexes
+        val stepRegularity  = session!!.autocorrelationData.sum() / dataSizeAutocorrelation
+        var strideRegularity: MutableList<Float> = mutableListOf()
+        for((i, value) in session!!.autocorrelationData.toList().withIndex()){
+            if (i%2 == 0)
+                strideRegularity.add(value)
+        }
+        stepSymmetry.text = "Step Symmetry " + stepRegularity/(strideRegularity.average())
     }
 
     // Plot graph at graphID in XML, given LineGraphSeries and title

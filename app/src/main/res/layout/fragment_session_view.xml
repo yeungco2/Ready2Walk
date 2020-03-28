@@ -17,10 +17,10 @@
               android:layout_height="180dp"
               app:layout_constraintBottom_toBottomOf="parent"
               app:layout_constraintEnd_toEndOf="parent"
-              app:layout_constraintHorizontal_bias="0.495"
+              app:layout_constraintHorizontal_bias="0.0"
               app:layout_constraintStart_toStartOf="parent"
               app:layout_constraintTop_toBottomOf="@+id/sessionGyroGraph"
-              app:layout_constraintVertical_bias="0.406" />
+              app:layout_constraintVertical_bias="0.266" />
 
           <com.jjoe64.graphview.GraphView
               android:id="@+id/sessionGyroGraph"
@@ -56,27 +56,29 @@
               android:textColor="?attr/textColor"
               app:layout_constraintTop_toBottomOf="@+id/sessionGyroGraph" />
 
+
           <TextView
-              android:id="@+id/autocorrelationAverage"
+              android:id="@+id/stepSymmetry"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
+              android:text="Step Symmetry: "
               android:textColor="?attr/textColor"
-              android:text="Average Autocorrelation: "
               app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintBottom_toTopOf="@+id/sendEmail"
               app:layout_constraintEnd_toEndOf="parent"
               app:layout_constraintStart_toStartOf="parent"
-              app:layout_constraintTop_toBottomOf="@+id/sessionAutocorrGraph"
-              app:layout_constraintBottom_toTopOf="@+id/sendEmail"/>
+              app:layout_constraintTop_toBottomOf="@+id/sessionAutocorrGraph" />
 
           <Button
               android:id="@+id/sendEmail"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
+              android:text="Send Data"
               app:layout_constraintBottom_toBottomOf="parent"
               app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintHorizontal_bias="0.498"
               app:layout_constraintStart_toStartOf="parent"
-              app:layout_constraintTop_toBottomOf="@+id/autocorrelationAverage"
-              android:text="Send Data"/>
+              app:layout_constraintTop_toBottomOf="@+id/autocorrelationAverage" />
 
      </androidx.constraintlayout.widget.ConstraintLayout>
 
