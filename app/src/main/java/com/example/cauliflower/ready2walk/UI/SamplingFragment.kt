@@ -2,6 +2,7 @@ package com.example.cauliflower.ready2walk.UI
 
 
 import android.content.Context
+import android.content.Context.WINDOW_SERVICE
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -9,11 +10,10 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.cauliflower.ready2walk.Database.Sessions
@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.math.absoluteValue
 
 
 /**
@@ -35,7 +36,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
     private var sensorManager: SensorManager? = null
     var phoneAccelerometer: Sensor? = null
     var phoneStepSensor: Sensor? = null
-    var phoneGyroscope: Sensor? = null
+    var magenticSensor: Sensor? = null
 
     //Added Step Counter
     var phoneStepCounter: Sensor? = null
@@ -46,13 +47,21 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
     var stepData: MutableList<Float> = mutableListOf()
     var peaksData: MutableList<Float> = mutableListOf()
 
-    var gyroscopeData: MutableList<Float> = mutableListOf()
+    var rotationData: MutableList<Float> = mutableListOf()
     var sessionDate: String = String()
     var sessionSamplingPeriodUs: Int = 1000
 
     //
     var gravity: FloatArray = FloatArray(3)
     var linear_acceleration: FloatArray = FloatArray(3)
+
+    // Current data from accelerometer & magnetometer.  The arrays hold values
+    // for X, Y, and Z.
+    private var mAccelerometerData = FloatArray(3)
+    private var mMagnetometerData = FloatArray(3)
+
+    // System display. Need this for determining rotation.
+    private var mDisplay: Display? = null
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -74,7 +83,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         sensorManager = activity!!.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         phoneAccelerometer = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         phoneStepSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
-        phoneGyroscope = sensorManager!!.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        magenticSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
         //sensorManager!!.unregisterListener(this)
 
         //Step Counter to use if Step Detector doesn't register due to power issue
@@ -82,12 +91,15 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
 
         //functionality start button
         startButton.setOnClickListener {
+
+            activity!!.toast("Session Started") //send verification message
+
             //Register Sensors
             sensorManager!!.registerListener(this, phoneAccelerometer, 1000)
             var sensor = sensorManager!!.registerListener(this, phoneStepSensor,
                     0, 0)
-            sensorManager!!.registerListener(this, phoneGyroscope, sessionSamplingPeriodUs)
-            activity!!.toast("Session Started") //send verification message
+            sensorManager!!.registerListener(this, magenticSensor, sessionSamplingPeriodUs)
+
 
             //System.out.println("Step Detector is: " + sensor)
             val pm: PackageManager = context!!.getPackageManager()
@@ -111,6 +123,11 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
             }
             System.out.println("Sampling Process Initiated")
 
+
+            // Get the display from the window manager (for rotation).
+            val wm = activity!!.getSystemService(WINDOW_SERVICE) as WindowManager?
+            mDisplay = wm!!.defaultDisplay
+
         }
         //functionality stop button
         stopButton.setOnClickListener {
@@ -122,9 +139,14 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 context?.let { it ->
                     if (accelerometerData.isEmpty() == false) {
 
-                        peaksData = findPeaks(accelerometerData)
+                        var filteredAcc = movingAverage(entries = accelerometerData, window = 100,
+                                averageCalc = { mean() }).toMutableList()
+                        var filteredRot = movingAverage(entries = rotationData, window = 100,
+                                averageCalc = { mean() }).toMutableList()
 
-                        autocorrelationRawData = peaksData.filter { it != 0.0F }.toMutableList()
+                        peaksData = findPeaks(filteredAcc)
+
+                        autocorrelationRawData = peaksData.drop(10).filter { it != 0.0F }.toMutableList()
 
                         var autocorrK = 0.0
                         var autocorr0 = 0.0
@@ -144,8 +166,8 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                                     autocorrK += ((ivalue - meanRaw) *
                                             (autocorrelationRawData.toList().get((k + i) % (dataSize - k)) - meanRaw))
                                 }
-                                if (autocorrK > 0 ){
-                                autocorr0 += (autocorrK - autocorr0) / (k + 1)}
+
+                                autocorr0 += (autocorrK.absoluteValue - autocorr0.absoluteValue) / (k + 1)
                                 System.out.println("Autocorr0: " + autocorr0 + autocorrK)
                                 autocorrelationData.add((autocorrK / (autocorr0)).toFloat())
                             }
@@ -154,9 +176,9 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                         // Save session
                         if (autocorrelationData.isEmpty() == false && peaksData.isEmpty() == false) {
                             //Create session entry
-                            var sessionAccelerometer = accelerometerData.toList()
+                            var sessionAccelerometer = filteredAcc.toList()
                             var sessionAutocorrelation = autocorrelationData.toList()
-                            var sessionGyroscope = gyroscopeData.toList()
+                            var sessionGyroscope = filteredRot.toList()
                             var sessionSteps = stepData.toList()
                             var sessionPeaks = peaksData.toList()
                             sessionDate = Calendar.getInstance().time.toString()
@@ -185,16 +207,15 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null) {
-            if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-                accelerometerData.add(event.values[0]) // Extract acceleration in Medilateral direction
+            /*if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+                accelerometerData.add(event.values[2]) // Extract acceleration in Medilateral direction (phone z axis)
                 stepData.add((0).toFloat())
                 //System.out.println("step1")
                 return;
             }
 
-            if (event.sensor.type == Sensor.TYPE_GYROSCOPE) {
-                gyroscopeData.add(event.values[2])  // get value about z-axis (value[2]), to get left and right sway
-
+            if (event.sensor.type == Sensor.TYPE_ROTATION_VECTOR) {
+                rotationData.add(event.values[2])  // get value about z-axis (value[2]), to get left and right sway
                 //System.out.println("Gyroscope: " + event.values[2])
                 return;
             }
@@ -205,14 +226,79 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 //System.out.println("step2")
                 //context?.toast("you have step sensor")
                 return;
+            }*/
+
+            // The sensorEvent object is reused across calls to onSensorChanged().
+            // clone() gets a copy so the data doesn't change out from under us
+            when (event.sensor.type) {
+                Sensor.TYPE_ACCELEROMETER -> {
+                    accelerometerData.add(event.values[0]) // Extract acceleration in Medilateral direction (phone z axis)
+                    stepData.add((0).toFloat())
+                    mAccelerometerData = event.values.clone();
+                    //System.out.println("step1")
+                }
+                Sensor.TYPE_MAGNETIC_FIELD -> {
+                    //rotationData.add(event.values[2])  // get value about z-axis (value[2]), to get left and right sway
+                    mMagnetometerData = event.values.clone()
+
+                    //System.out.println("Gyroscope: " + event.values[2])
+                }
+                Sensor.TYPE_STEP_DETECTOR -> {
+                    //autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
+                    stepData[stepData.lastIndex] = (10).toFloat()
+                }
+                else -> return
             }
 
-            /*//System.out.println("Event is:" + event.sensor.type)
-            if (event.sensor.type == Sensor.TYPE_STEP_COUNTER) {
-                autocorrelationRawData.add(accelerometerData.last()) // get last accelerometer value
-                System.out.println("Step Counter Registered")
-                return;
-            }*/
+            if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+                // Compute the rotation matrix: merges and translates the data
+                // from the accelerometer and magnetometer, in the device coordinate
+                // system, into a matrix in the world's coordinate system.
+                //
+                // The second argument is an inclination matrix, which isn't
+                // used in this example.
+
+                // Compute the rotation matrix: merges and translates the data
+                // from the accelerometer and magnetometer, in the device coordinate
+                // system, into a matrix in the world's coordinate system.
+                //
+                // The second argument is an inclination matrix, which isn't
+                // used in this example.
+                val rotationMatrix = FloatArray(9)
+                val rotationOK = SensorManager.getRotationMatrix(rotationMatrix,
+                        null, mAccelerometerData, mMagnetometerData)
+
+                // Remap the matrix based on current device/activity rotation.
+
+                // Remap the matrix based on current device/activity rotation.
+                var rotationMatrixAdjusted = FloatArray(9)
+                when (mDisplay!!.getRotation()) {
+                    Surface.ROTATION_0 -> rotationMatrixAdjusted = rotationMatrix.clone()
+                    Surface.ROTATION_90 -> SensorManager.remapCoordinateSystem(rotationMatrix,
+                            SensorManager.AXIS_Y, SensorManager.AXIS_MINUS_X,
+                            rotationMatrixAdjusted)
+                    Surface.ROTATION_180 -> SensorManager.remapCoordinateSystem(rotationMatrix,
+                            SensorManager.AXIS_MINUS_X, SensorManager.AXIS_MINUS_Y,
+                            rotationMatrixAdjusted)
+                    Surface.ROTATION_270 -> SensorManager.remapCoordinateSystem(rotationMatrix,
+                            SensorManager.AXIS_MINUS_Y, SensorManager.AXIS_X,
+                            rotationMatrixAdjusted)
+                }
+
+                // Get the orientation of the device (azimuth, pitch, roll) based
+                // on the rotation matrix. Output units are radians.
+                val orientationValues = FloatArray(3)
+                if (rotationOK) {
+                    SensorManager.getOrientation(rotationMatrixAdjusted,
+                            orientationValues)
+
+                    // Pull out the individual values from the array.
+                    /*val azimuth = orientationValues[0]
+                    val pitch = orientationValues[1]
+                    val roll = orientationValues[2]*/
+                }
+                rotationData.add(orientationValues[0] * 57.2957795f)
+            }
         }
     }
 
@@ -229,7 +315,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
 
         for ((i, value) in accData.withIndex()) {
             if (i == 0)
-            System.out.println("hello")
+                System.out.println("hello")
             // look for highest peak
             if ((value > tempPeak) && highFlag && value > 0) {
                 tempPeak = value
@@ -243,8 +329,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 tempPeak = value
                 tempIndex = i
                 restartWindow = true
-            }
-            else
+            } else
                 restartWindow = false
             //restart window
             if (restartWindow) {
@@ -252,17 +337,17 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
                 //System.out.println(indexWindow)
             } else // start window
                 indexWindow++
-                //System.out.println(indexWindow)
+            //System.out.println(indexWindow)
             //save found peak high and change to low
             if (!restartWindow && indexWindow == windowSize && highFlag) {
-                peakData.add(tempIndex,tempPeak)
+                peakData.add(tempIndex, tempPeak)
                 System.out.println("up" + value + "index" + tempIndex)
                 highFlag = false
                 lowFlag = true
             }
             //save found peak low and change to high
             else if (!restartWindow && indexWindow == windowSize && lowFlag) {
-                peakData.add(tempIndex,tempPeak)
+                peakData.add(tempIndex, tempPeak)
                 System.out.println("low" + value + "index" + tempIndex)
                 highFlag = true
                 lowFlag = false
@@ -272,25 +357,51 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
         return peakData
     }
 
+    private fun smoothingData(rawData: MutableList<Float>): MutableList<Float> {
+        var smoothData: MutableList<Float> = mutableListOf()
 
-    //saving without coroutines
-    /*private fun saveSession(sessions: Sessions) {
-        class SaveSession : AsyncTask<Void, Void, Void>() {
-            //run in background
-            override fun doInBackground(vararg parameters: Void?): Void? {
-                SessionsDatabase(activity!!).getSessionsDao().addSession(sessions)
-                return null
-            }
+        // Moving Average Algorithm
+        for ((i, value) in rawData.withIndex()){
 
-            override fun onPostExecute(result: Void?) {
-                super.onPostExecute(result)
-
-                Toast.makeText(activity, "Session Saved", Toast.LENGTH_LONG).show()
-            }
 
         }
-        SaveSession().execute()
-    }*/
+
+        return smoothData
+    }
+
+    fun <T> List<T>.slidingWindow(size: Int): List<List<T>> {
+        if (size < 1) {
+            throw IllegalArgumentException("Size must be > 0, but is $size.")
+        }
+        return this.mapIndexed { index, _ ->
+            this.subList(maxOf(index - size + 1, 0), index + 1)
+        }
+    }
+
+    fun Iterable<Float>.mean(): Float {
+        val sum: Float = this.sum()
+        return sum / this.count()
+    }
+
+    fun sumTo(n: Int): Int = n * (n + 1) / 2
+
+    fun Iterable<Float>.weightedMean(): Float {
+        val sum: Float = this
+                .mapIndexed { index, t -> t * (index + 1) }
+                .sum()
+        return sum / sumTo(this.count())
+    }
+
+    fun movingAverage(entries: List<Float>, window: Int,
+                      averageCalc: Iterable<Float>.() -> Float): List<Float> {
+        val result = entries.slidingWindow(size = window)
+                .filter { it.isNotEmpty() }
+                .map { it -> it.averageCalc() }
+                .toList()
+        return result
+    }
+
+
 }
 
 
