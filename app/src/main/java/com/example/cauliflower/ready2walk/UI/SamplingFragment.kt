@@ -350,7 +350,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
 
     private fun findPeaks(accData: MutableList<Float>): MutableList<Float> {
         var peakData: MutableList<Float> = mutableListOf()
-        val windowSize = 400
+        val windowSize = 250
         var indexWindow = 0
         var tempPeak = 0f
         var tempIndex = 0
