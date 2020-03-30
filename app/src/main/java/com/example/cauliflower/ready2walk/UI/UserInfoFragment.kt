@@ -3,6 +3,7 @@ package com.example.cauliflower.ready2walk.UI
 
     import android.content.Context
     import android.content.Intent
+    import android.graphics.Color
     import android.os.Bundle
     import android.view.LayoutInflater
     import android.view.View
@@ -11,8 +12,17 @@ package com.example.cauliflower.ready2walk.UI
     import android.widget.TextView
     import androidx.appcompat.app.AppCompatActivity
     import androidx.appcompat.app.AppCompatDelegate
+    import com.example.cauliflower.ready2walk.Database.SessionsDatabase
     import com.example.cauliflower.ready2walk.R
+    import com.jjoe64.graphview.GraphView
+    import com.jjoe64.graphview.LegendRenderer
+    import com.jjoe64.graphview.series.DataPoint
+    import com.jjoe64.graphview.series.LineGraphSeries
+    import kotlinx.android.synthetic.main.fragment_session_view.*
     import kotlinx.android.synthetic.main.fragment_user_info.*
+    import kotlinx.coroutines.CoroutineScope
+    import kotlinx.coroutines.Dispatchers
+    import kotlinx.coroutines.launch
     import java.io.BufferedReader
     import java.io.File
     import java.io.FileInputStream
@@ -20,8 +30,11 @@ package com.example.cauliflower.ready2walk.UI
 
 
 class UserInfoFragment : BaseFragment()  {
+    private lateinit var sessionGraphSeries:LineGraphSeries<DataPoint>
+    private lateinit var sessionGraphAngleSeries:LineGraphSeries<DataPoint>
 
-        override fun onCreateView(
+
+    override fun onCreateView(
                 inflater: LayoutInflater, container: ViewGroup?,
                 savedInstanceState: Bundle?
     ): View? {
@@ -64,6 +77,9 @@ class UserInfoFragment : BaseFragment()  {
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
+        sessionGraphSeries = LineGraphSeries<DataPoint>()
+        sessionGraphAngleSeries = LineGraphSeries<DataPoint>()
+
         super.onActivityCreated(savedInstanceState)
         val user_name = "userName"
         val user_height = "userHeight"
@@ -103,6 +119,78 @@ class UserInfoFragment : BaseFragment()  {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            }
+        }
+
+        fun plotGraph(graph: GraphView, series: LineGraphSeries<DataPoint>, title:String, horizontalTitle:String, verticalTitle:String, plotColor:Int) {
+            series.title = title
+            series.color = plotColor
+            graph.addSeries(series)
+            graph.viewport.isScalable = true
+            graph.viewport.setScalableY(true)
+            graph.viewport.borderColor = Color.RED
+            graph.legendRenderer.textColor = Color.CYAN
+            graph.setPadding(0,0,0,0)
+
+            graph.legendRenderer.apply {
+                isVisible = true
+                align = LegendRenderer.LegendAlign.BOTTOM
+            }
+            graph.gridLabelRenderer.apply {
+                gridColor = Color.RED //R.attr.textColor
+                verticalLabelsColor = Color.BLUE //R.attr.textColor
+                horizontalLabelsColor = Color.BLUE
+                horizontalAxisTitleColor = Color.BLUE
+                verticalAxisTitleColor = Color.BLUE
+                horizontalAxisTitle = horizontalTitle
+                verticalAxisTitle = verticalTitle
+                labelVerticalWidth = (verticalAxisTitleWidth+20)
+            }
+        }
+
+        CoroutineScope(Dispatchers.Main + job1).launch {
+            context?.let {
+                val allSessions = SessionsDatabase(it).getSessionsDao().getAllSessions()
+                if (!allSessions.isEmpty()) {
+
+                    var savedValuesAverage: MutableList<Double> = mutableListOf();
+
+
+                    for ((index, value) in allSessions!!.toList().withIndex()) {
+                        var session = allSessions[index];
+                        var AccelerometerAverage = session.autocorrelationData.average();
+                        savedValuesAverage.add(AccelerometerAverage);
+                    }
+
+                    for((index, value) in savedValuesAverage.toList().withIndex()){
+                        // Fill graph series
+                        sessionGraphSeries.appendData(DataPoint(index.toDouble() + 1, value), true, savedValuesAverage.size)
+                    }
+                    plotGraph(averageGraph, sessionGraphSeries, "Average Step Symmetry", "Session Number", "Step Symmetry", Color.BLUE)
+                }
+            }
+        }
+
+        CoroutineScope(Dispatchers.Main + job1).launch {
+            context?.let {
+                val allSessions = SessionsDatabase(it).getSessionsDao().getAllSessions()
+                if (!allSessions.isEmpty()) {
+
+                    var savedValuesAverage: MutableList<Double> = mutableListOf();
+
+
+                    for ((index, value) in allSessions!!.toList().withIndex()) {
+                        var session = allSessions[index];
+                        var AccelerometerAverage = session.gyroscopeData.average();
+                        savedValuesAverage.add(AccelerometerAverage);
+                    }
+
+                    for((index, value) in savedValuesAverage.toList().withIndex()){
+                        // Fill graph series
+                        sessionGraphAngleSeries.appendData(DataPoint(index.toDouble() + 1, value), true, savedValuesAverage.size)
+                    }
+                    plotGraph(angleGraph, sessionGraphAngleSeries, "Average Angle", "Session Number", "Angle", Color.BLUE)
+                }
             }
         }
     }
