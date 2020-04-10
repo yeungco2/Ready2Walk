@@ -350,7 +350,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
 
     private fun findPeaks(accData: MutableList<Float>): MutableList<Float> {
         var peakData: MutableList<Float> = mutableListOf()
-        val windowSize = 250
+        val windowSize = 150
         var indexWindow = 0
         var tempPeak = 0f
         var tempIndex = 0
@@ -421,7 +421,7 @@ class SamplingFragment : BaseFragment(), SensorEventListener {
     }
 
 
-    // Moving average filter
+    // Moving average filter source: https://peterscully.name/2017/08/03/moving-average/
     fun <T> List<T>.slidingWindow(size: Int): List<List<T>> {
         if (size < 1) {
             throw IllegalArgumentException("Size must be > 0, but is $size.")
